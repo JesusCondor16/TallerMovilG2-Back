@@ -10,11 +10,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +26,7 @@ public class FirebaseAuthService {
     private String firebaseAuthUrl;
     @Value("${firebase.token-refresh-url}")
     private String firebaseRefreshUrl;
+    private final UserService userService;
 
     public Mono<TokenResponse> register(RegisterRequest request) {
         UserRecord.CreateRequest createRequest = new UserRecord.CreateRequest()
@@ -35,9 +36,19 @@ public class FirebaseAuthService {
                 .setDisabled(false);
 
         return Mono.fromCallable(() -> FirebaseAuth.getInstance().createUser(createRequest))
-                .flatMap(userRecord -> this.login(request.getEmail(), request.getPassword()))
-                .onErrorResume(e -> Mono.error(new CustomException(HttpStatus.BAD_REQUEST,"Error al crear usuario: " + e.getMessage())));
+                .flatMap(userRecord ->
+                        userService.createUserFirestore(userRecord.getUid(), request)
+                        .then(this.login(request.getEmail(), request.getPassword()))
+                        .onErrorResume(e ->
+                                Mono.fromCallable(() -> {
+                                            FirebaseAuth.getInstance().deleteUser(userRecord.getUid());
+                                            return null;
+                                        }
+                                ).then(Mono.error(new CustomException(HttpStatus.BAD_REQUEST, "Error al guardar en firestore" + e.getMessage())))
+                        ).onErrorResume(e -> Mono.error(new CustomException(HttpStatus.BAD_REQUEST, "Error al crear el usuario: "+ e.getMessage()))));
+
     }
+
     public Mono<TokenResponse> login(String email, String password) {
         Map<String, Object> requestBody = Map.of(
                 "email", email,
@@ -46,7 +57,7 @@ public class FirebaseAuthService {
         );
 
         return webClient.post()
-                .uri(firebaseAuthUrl+firebaseApiKey)
+                .uri(firebaseAuthUrl + firebaseApiKey)
                 .bodyValue(requestBody)
                 .retrieve()
                 .bodyToMono(Map.class)
