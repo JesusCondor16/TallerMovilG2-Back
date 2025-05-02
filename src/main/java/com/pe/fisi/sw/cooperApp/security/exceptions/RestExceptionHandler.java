@@ -17,15 +17,4 @@ public class RestExceptionHandler {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(body);
     }
-
-    @ExceptionHandler(Throwable.class)
-    public ResponseEntity<ErrorResponse> handleAnyException(Throwable ex) {
-        ErrorResponse body = new ErrorResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Ha ocurrido un error inesperado"
-        );
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(body);
-    }
 }

@@ -11,8 +11,6 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.time.Instant;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 @Service
 public class UserService {
@@ -29,12 +27,40 @@ public class UserService {
                 .apellido(request.getLastname())
                 .fechaRegistro(Instant.now())
                 .rol("cliente")
+                .tipoDocumento(request.getTipoDocumento())
+                .dni(request.getDni())
+                .telefono(request.getTelefono())
+                .username(request.getUsername())
                 .build();
+
         return Mono.fromCallable(() ->
                         firestore.collection(USERS).document(uid).set(user).get()
                 )
                 .subscribeOn(Schedulers.boundedElastic())
                 .then()
-                .onErrorResume(e -> Mono.error(new RuntimeException("Error al guardar en Firestore: " + e.getMessage())));
+                .onErrorResume(e ->
+                        Mono.error(new CustomException(HttpStatus.INTERNAL_SERVER_ERROR,
+                                "Error al guardar el usuario en Firestore: " + e.getMessage()))
+                );
     }
+    public Mono<Boolean> validateDni(RegisterRequest request) {
+        return Mono.fromCallable(() ->
+                !firestore.collection(USERS)
+                        .whereEqualTo("dni", request.getDni())
+                        .get()
+                        .get()
+                        .isEmpty()
+        ).subscribeOn(Schedulers.boundedElastic());
+    }
+
+    public Mono<Boolean> validateEmail(RegisterRequest request) {
+        return Mono.fromCallable(() ->
+                !firestore.collection(USERS)
+                        .whereEqualTo("email", request.getEmail())
+                        .get()
+                        .get()
+                        .isEmpty()
+        ).subscribeOn(Schedulers.boundedElastic());
+    }
+
 }

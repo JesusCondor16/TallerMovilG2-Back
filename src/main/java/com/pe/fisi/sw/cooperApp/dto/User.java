@@ -15,4 +15,8 @@ public class User {
     private String apellido;
     private String rol;
     private Instant fechaRegistro;
+    private String tipoDocumento;
+    private String dni;
+    private String telefono;
+    private String username;
 }

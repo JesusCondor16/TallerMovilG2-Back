@@ -14,7 +14,6 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
@@ -29,25 +28,47 @@ public class FirebaseAuthService {
     private final UserService userService;
 
     public Mono<TokenResponse> register(RegisterRequest request) {
-        UserRecord.CreateRequest createRequest = new UserRecord.CreateRequest()
-                .setEmail(request.getEmail())
-                .setPassword(request.getPassword())
-                .setEmailVerified(false)
-                .setDisabled(false);
+        return Mono.zip(
+                userService.validateDni(request),
+                userService.validateEmail(request)
+        ).flatMap(validationResults -> {
+            boolean dniExists = validationResults.getT1();
+            boolean emailExists = validationResults.getT2();
 
-        return Mono.fromCallable(() -> FirebaseAuth.getInstance().createUser(createRequest))
-                .flatMap(userRecord ->
-                        userService.createUserFirestore(userRecord.getUid(), request)
-                        .then(this.login(request.getEmail(), request.getPassword()))
-                        .onErrorResume(e ->
-                                Mono.fromCallable(() -> {
-                                            FirebaseAuth.getInstance().deleteUser(userRecord.getUid());
-                                            return null;
-                                        }
-                                ).then(Mono.error(new CustomException(HttpStatus.BAD_REQUEST, "Error al guardar en firestore" + e.getMessage())))
-                        ).onErrorResume(e -> Mono.error(new CustomException(HttpStatus.BAD_REQUEST, "Error al crear el usuario: "+ e.getMessage()))));
+            if (dniExists) {
+                return Mono.error(new CustomException(HttpStatus.CONFLICT, "DNI ya registrado"));
+            }
+            if (emailExists) {
+                return Mono.error(new CustomException(HttpStatus.CONFLICT, "Email ya registrado"));
+            }
 
+            // Si pasa validación, crear usuario en Firebase Auth
+            return Mono.fromCallable(() -> {
+                try {
+                    return FirebaseAuth.getInstance().createUser(
+                            new UserRecord.CreateRequest()
+                                    .setEmail(request.getEmail())
+                                    .setPassword(request.getPassword())
+                                    .setEmailVerified(false)
+                                    .setDisabled(false)
+                    );
+                } catch (Exception e) {
+                    throw new CustomException(HttpStatus.BAD_REQUEST, "Error en Firebase: " + e.getMessage());
+                }
+            }).flatMap(userRecord ->
+                    userService.createUserFirestore(userRecord.getUid(), request)
+                            .then(this.login(request.getEmail(), request.getPassword()))
+                            .onErrorResume(e ->
+                                    Mono.fromCallable(() -> {
+                                        FirebaseAuth.getInstance().deleteUser(userRecord.getUid());
+                                        return null;
+                                    }).then(Mono.error(new CustomException(HttpStatus.BAD_REQUEST,
+                                            "Error al guardar en Firestore: " + e.getMessage())))
+                            )
+            );
+        });
     }
+
 
     public Mono<TokenResponse> login(String email, String password) {
         Map<String, Object> requestBody = Map.of(
