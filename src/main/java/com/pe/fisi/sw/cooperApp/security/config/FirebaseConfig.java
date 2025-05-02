@@ -24,18 +24,13 @@ public class FirebaseConfig {
     @PostConstruct
     public void initialize() {
         try {
-            InputStream serviceAccount = getClass().getResourceAsStream("/cooperauthapp-firebase-admin.json");
-
-            if (serviceAccount == null) {
-                throw new IllegalStateException("No se encontró el archivo de credenciales de Firebase");
-            }
+            // Cambiado para leer desde /etc/secrets en Render
+            InputStream serviceAccount = new java.io.FileInputStream("/etc/secrets/cooperauthapp-firebase-admin.json");
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .setDatabaseUrl("https://cooperauthapp-default-rtdb.firebaseio.com")
                     .build();
-
-            FirebaseApp.initializeApp(options);
 
             if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
@@ -48,6 +43,7 @@ public class FirebaseConfig {
             logger.error("Error inicializando FirebaseApp: {}", e.getMessage());
         }
     }
+
     @Bean
     public Firestore firestore(){
         return FirestoreClient.getFirestore();
