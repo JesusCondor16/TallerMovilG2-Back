@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+## coopearAuth
+src/main/resources/cooperauthapp-firebase-admin.json
