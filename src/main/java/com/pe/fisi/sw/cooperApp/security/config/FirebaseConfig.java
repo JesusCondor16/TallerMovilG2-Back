@@ -34,17 +34,11 @@ public class FirebaseConfig {
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .setDatabaseUrl("https://cooperauthapp-default-rtdb.firebaseio.com")
                     .build();
-            //FirebaseOptions db = FirebaseOptions.builder()
-            //.setCredentials(GoogleCredentials.fromStream(serviceAccount))
-            //.setDatabaseUrl("https://cooperauthapp-default-rtdb.firebaseio.com")
-            //.build();
 
             FirebaseApp.initializeApp(options);
-            //FirebaseApp.initializeApp(db);
 
             if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
-                //FirebaseApp.initializeApp(db);
                 logger.info("FirebaseApp inicializado correctamente.");
             } else {
                 logger.info("FirebaseApp ya estaba inicializado.");

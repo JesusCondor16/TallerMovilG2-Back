@@ -13,4 +13,8 @@ public class RegisterRequest {
     private String email;
     @NotBlank(message = "{validate.notblank.message}")
     private String password;
+    @NotBlank(message = "{validate.notblank.message}")
+    private String firstname;
+    @NotBlank(message = "{validate.notblank.message}")
+    private String lastname;
 }
