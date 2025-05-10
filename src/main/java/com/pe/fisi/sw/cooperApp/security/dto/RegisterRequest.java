@@ -3,7 +3,6 @@ package com.pe.fisi.sw.cooperApp.security.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -34,8 +33,5 @@ public class RegisterRequest {
     @Pattern(regexp = "\\d{9}", message = "{validate.phone.message}")
     private String telefono;
 
-    @NotBlank(message = "{validate.notblank.message}")
-    @Size(min = 4, max = 20, message = "{validate.username.size.message}")
-    private String username;
 }
 

@@ -5,6 +5,7 @@ import com.google.firebase.auth.UserRecord;
 import com.pe.fisi.sw.cooperApp.security.dto.RegisterRequest;
 import com.pe.fisi.sw.cooperApp.security.dto.TokenResponse;
 import com.pe.fisi.sw.cooperApp.security.exceptions.CustomException;
+import com.pe.fisi.sw.cooperApp.users.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
