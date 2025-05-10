@@ -1,0 +1,23 @@
+package com.pe.fisi.sw.cooperApp.banking.dto;
+
+import com.pe.fisi.sw.cooperApp.users.dto.User;
+import lombok.Builder;
+import lombok.Data;
+
+import java.time.Instant;
+import java.util.List;
+
+@Data
+@Builder
+public class Account {
+    private String cuentaId;
+    private String nombreCuenta;
+    private String tipo;
+    private String estado;
+    private String moneda;
+    private float saldo;
+    private String descripcion;
+    private User creador;
+    private Instant fechaCreacion;
+    private List<String> miembros;
+}
