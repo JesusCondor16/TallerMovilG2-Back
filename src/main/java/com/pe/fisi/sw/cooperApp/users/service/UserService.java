@@ -46,20 +46,20 @@ public class UserService {
                                 "Error al guardar el usuario en Firestore: " + e.getMessage()))
                 );
     }
-    public Mono<Boolean> validateDni(RegisterRequest request) {
+    public Mono<Boolean> validateDni(String dni) {
         return Mono.fromCallable(() ->
                 !firestore.collection(USERS)
-                        .whereEqualTo("dni", request.getDni())
+                        .whereEqualTo("dni", dni)
                         .get()
                         .get()
                         .isEmpty()
         ).subscribeOn(Schedulers.boundedElastic());
     }
 
-    public Mono<Boolean> validateEmail(RegisterRequest request) {
+    public Mono<Boolean> validateEmail(String email) {
         return Mono.fromCallable(() ->
                 !firestore.collection(USERS)
-                        .whereEqualTo("email", request.getEmail())
+                        .whereEqualTo("email", email)
                         .get()
                         .get()
                         .isEmpty()

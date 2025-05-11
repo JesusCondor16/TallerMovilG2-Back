@@ -6,8 +6,10 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -17,15 +19,13 @@ import java.io.InputStream;
 
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class FirebaseConfig {
-
-    private static final Logger logger = LoggerFactory.getLogger(FirebaseConfig.class);
 
     @PostConstruct
     public void initialize() {
         try {
-            // Cambiado para leer desde /etc/secrets en Render
-            InputStream serviceAccount = new java.io.FileInputStream("/etc/secrets/cooperauthapp-firebase-admin.json");
+            InputStream serviceAccount = getClass().getResourceAsStream("/etc/secrets/cooperauthapp-firebase-admin.json");
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
@@ -34,13 +34,13 @@ public class FirebaseConfig {
 
             if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
-                logger.info("FirebaseApp inicializado correctamente.");
+                log.info("FirebaseApp inicializado correctamente.");
             } else {
-                logger.info("FirebaseApp ya estaba inicializado.");
+                log.info("FirebaseApp ya estaba inicializado.");
             }
 
         } catch (IOException e) {
-            logger.error("Error inicializando FirebaseApp: {}", e.getMessage());
+            log.error("Error inicializando FirebaseApp: {}", e.getMessage());
         }
     }
 

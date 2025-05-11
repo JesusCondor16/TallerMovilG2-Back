@@ -30,8 +30,8 @@ public class FirebaseAuthService {
 
     public Mono<TokenResponse> register(RegisterRequest request) {
         return Mono.zip(
-                userService.validateDni(request),
-                userService.validateEmail(request)
+                userService.validateDni(request.getDni()),
+                userService.validateEmail(request.getEmail())
         ).flatMap(validationResults -> {
             boolean dniExists = validationResults.getT1();
             boolean emailExists = validationResults.getT2();
@@ -113,6 +113,14 @@ public class FirebaseAuthService {
                         Mono.error(new CustomException(HttpStatus.UNAUTHORIZED, "Token refresh invalido"))
                 );
     }
-
+    public Mono<String> updatePassword(String email, String newPassword) {
+        return Mono.fromCallable(() -> {
+            UserRecord user = FirebaseAuth.getInstance().getUserByEmail(email);
+            UserRecord.UpdateRequest request = new UserRecord.UpdateRequest(user.getUid())
+                    .setPassword(newPassword);
+            FirebaseAuth.getInstance().updateUser(request);
+            return "Contraseña actualizada";
+        });
+    }
 
 }
