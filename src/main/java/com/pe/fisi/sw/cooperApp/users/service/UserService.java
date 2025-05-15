@@ -1,6 +1,7 @@
 package com.pe.fisi.sw.cooperApp.users.service;
 
 import com.google.cloud.firestore.Firestore;
+import com.pe.fisi.sw.cooperApp.users.dto.EditRequest;
 import com.pe.fisi.sw.cooperApp.users.dto.User;
 import com.pe.fisi.sw.cooperApp.security.dto.RegisterRequest;
 import com.pe.fisi.sw.cooperApp.security.exceptions.CustomException;
@@ -67,5 +68,8 @@ public class UserService {
     }
     public Mono<User> findByUid(String uid) {
         return userRepository.findById(uid);
+    }
+    public Mono<User> editProfile(EditRequest editRequest){
+        return userRepository.edituser(editRequest);
     }
 }
