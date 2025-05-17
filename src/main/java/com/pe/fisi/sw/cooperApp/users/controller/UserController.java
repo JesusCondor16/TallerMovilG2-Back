@@ -22,12 +22,12 @@ public class UserController {
         return userService.findByUid(uid).map(ResponseEntity::ok)
                 .onErrorResume(error->
                         Mono.error(new CustomException(HttpStatus.BAD_REQUEST, "Usuario no encontrado")));
-    }
-    @PutMapping("/edit/{uid}")
-    public Mono<ResponseEntity<User>> editUser(@RequestBody EditRequest editRequest){
-        validator.validate(editRequest);
-        return userService.editProfile(editRequest).map(ResponseEntity::ok)
-                .onErrorResume(error->
-                        Mono.error(new CustomException(HttpStatus.BAD_REQUEST, "Error al editar el usuario")));
-    }
+        }
+        @PutMapping("/edit/{uid}")
+        public Mono<ResponseEntity<User>> editUser(@RequestBody EditRequest editRequest){
+            validator.validate(editRequest);
+            return userService.editProfile(editRequest).map(ResponseEntity::ok)
+                    .onErrorResume(error->
+                            Mono.error(new CustomException(HttpStatus.BAD_REQUEST, "Error al editar el usuario")));
+        }
 }

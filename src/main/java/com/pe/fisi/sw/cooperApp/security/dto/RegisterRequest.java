@@ -25,6 +25,8 @@ public class RegisterRequest {
     @NotBlank(message = "{validate.notblank.message}")
     private String tipoDocumento;
 
+    private String fechaNacimiento;
+
     @NotBlank(message = "{validate.notblank.message}")
     @Pattern(regexp = "\\d{8}", message = "{validate.dni.size.message}")
     private String dni;
