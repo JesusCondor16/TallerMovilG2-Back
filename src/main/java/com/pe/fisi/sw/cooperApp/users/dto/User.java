@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.Date;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -22,5 +24,5 @@ public class User {
     private String tipoDocumento;
     private String dni;
     private String estado;
-
+    private Date fechaNacimiento;
 }
