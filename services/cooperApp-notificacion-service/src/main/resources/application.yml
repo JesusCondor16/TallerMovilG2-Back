@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: cooperApp-notificacion-service
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: reactive-notification-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: com.pe.fisi.sw.cooperApp.cooperApp_notificacion_service.dto.NotificationEvent
+
+server:
+  port: 8090
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    hostname: localhost
+    instance-id: ${spring.application.name}:${server.port}
+    prefer-ip-address: true
+    ip-address: 127.0.0.1
+    non-secure-port: 8090
+    home-page-url: http://localhost:8090/
+    status-page-url: http://localhost:8090/actuator/info
+    health-check-url: http://localhost:8090/actuator/health
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
