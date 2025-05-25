@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: cooperApp
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    properties:
+      spring.json.add.type.headers: false
+      spring.json.value.default.type: com.pe.fisi.sw.cooperApp.banking.dto.NotificationEvent
+  config:
+    import: classpath:smtp.properties
+
+firebase:
+  api-key: AIzaSyCF34dwA3SlBV_2lIOikVJrOfNCBrkIeyc
+  auth-url: https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=
+  token-refresh-url: https://securetoken.googleapis.com/v1/token?key=
+
+logging:
+  level:
+    org.springframework.web: DEBUG
+
+server:
+  port: 8080
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    hostname: localhost
+    instance-id: ${spring.application.name}:${server.port}
+    prefer-ip-address: true
+    ip-address: 127.0.0.1
+    non-secure-port: 8080
+    home-page-url: http://localhost:8080/
+    status-page-url: http://localhost:8080/actuator/info
+    health-check-url: http://localhost:8080/actuator/health
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always

@@ -122,5 +122,14 @@ public class FirebaseAuthService {
             return "Contraseña actualizada";
         });
     }
-
+    public Mono<String> getUidByEmail(String email) {
+        return Mono.fromCallable(() -> {
+            try {
+                UserRecord user = FirebaseAuth.getInstance().getUserByEmail(email);
+                return user.getUid();
+            } catch (Exception e) {
+                throw new CustomException(HttpStatus.NOT_FOUND, "Usuario no encontrado con email: " + email);
+            }
+        });
+    }
 }
