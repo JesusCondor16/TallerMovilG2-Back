@@ -3,7 +3,7 @@ package com.pe.fisi.sw.cooperApp.banking.controller;
 import com.pe.fisi.sw.cooperApp.banking.dto.AccountResponse;
 import com.pe.fisi.sw.cooperApp.banking.dto.CreateAccountRequest;
 import com.pe.fisi.sw.cooperApp.banking.service.AccountService;
-import com.pe.fisi.sw.cooperApp.banking.service.NotificationProdService;
+import com.pe.fisi.sw.cooperApp.banking.service.AccountServiceImpl;
 import com.pe.fisi.sw.cooperApp.security.validator.CustomValidator;
 import com.pe.fisi.sw.cooperApp.users.dto.AccountUserDto;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class BankingController {
 
     private final AccountService accountService;
     private final CustomValidator validator;
-    private final NotificationProdService notificationService;
+
     @PostMapping("/create")
     public Mono<ResponseEntity<AccountResponse>> createAccount(@RequestBody CreateAccountRequest request) {
         validator.validate(request);
@@ -39,21 +39,8 @@ public class BankingController {
     public Mono<ResponseEntity<List<AccountUserDto>>> getAllMembersOfAccount(@PathVariable String cuentaId) {
         return accountService.getAllMembersOfByAccountId(cuentaId).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
     }
-    @PostMapping("/invite-member")
-    public Mono<ResponseEntity<String>> inviteUserToAccount(
-            @RequestParam String email,      // Email del invitado
-            @RequestParam String cuentaId,  // ID de la cuenta
-            @RequestParam String inviterUid   // Dueño de la cuenta
-    ) {
-        return notificationService.inviteUserToAccount(email, cuentaId, inviterUid)
-                .thenReturn(ResponseEntity.ok("Invitación enviada"));
-    }
-    @PostMapping("/request-access")
-    public Mono<ResponseEntity<String>> requestAccessToAccount(
-            @RequestParam String email,          // email del dueño de la cuenta
-            @RequestParam String requesterUid     // ID del usuario que quiere unirse
-    ) {
-        return notificationService.requestAccess(email, requesterUid)
-                .thenReturn(ResponseEntity.ok("Solicitud enviada"));
+    @GetMapping("/generate-code")
+    public Mono<ResponseEntity<String>> generateInviteCode(@RequestParam String cuentaId) {
+        return accountService.generateCode(cuentaId).map(ResponseEntity::ok);
     }
 }

@@ -85,4 +85,16 @@ public class AccountRepository {
             return account.getMiembros();
         }).flatMapMany(Flux::fromIterable).subscribeOn(Schedulers.boundedElastic());
     }
+    public Mono<Account> getAccountById(String cuentaId) {
+        return Mono.fromCallable(() -> {
+            CollectionReference accounts = firestore.collection(ACCOUNTS);
+            ApiFuture<QuerySnapshot> future = accounts.whereEqualTo("cuentaId", cuentaId).get();
+            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+            if (documents.isEmpty()) {
+                throw new CustomException(HttpStatus.NOT_FOUND, "Cuenta no encontrada con ID: " + cuentaId);
+            }
+            return documents.get(0).toObject(Account.class);
+        }).subscribeOn(Schedulers.boundedElastic());
+    }
+
 }

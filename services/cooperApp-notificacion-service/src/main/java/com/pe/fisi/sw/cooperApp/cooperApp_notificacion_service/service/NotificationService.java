@@ -19,7 +19,7 @@ public class NotificationService {
     public Mono<Void> saveNotification(NotificationEvent event) {
         return Mono.fromCallable(() -> {
                     String documentId = firestore.collection(NOTIFICATIONS_COLLECTION).document().getId();
-                    event.setReferenceId(documentId); // opcional: puedes usarlo como ID del doc
+                    event.setIdCuenta(documentId); // opcional: puedes usarlo como ID del doc
                     firestore.collection(NOTIFICATIONS_COLLECTION).document(documentId).set(event).get();
                     log.info("🔔 Notificación guardada en Firestore con ID: {}", documentId);
                     return true;

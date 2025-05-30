@@ -9,6 +9,7 @@ spring:
     properties:
       spring.json.add.type.headers: false
       spring.json.value.default.type: com.pe.fisi.sw.cooperApp.banking.dto.NotificationEvent
+
   config:
     import: classpath:smtp.properties
 

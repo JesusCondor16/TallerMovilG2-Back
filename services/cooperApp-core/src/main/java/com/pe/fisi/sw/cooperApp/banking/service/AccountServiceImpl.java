@@ -15,7 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -73,5 +75,15 @@ public class AccountServiceImpl implements AccountService {
     public Mono<List<AccountUserDto>> getAllMembersOfByAccountId(String accountId) {
         return repository.getAllMembersOfByAccountId(accountId).collectList();
     }
+    @Override
+    public Mono<String> generateCode(String cuentaId) {
+        long expiration = System.currentTimeMillis() + 3600_000;
 
+        return repository.getAccountById(cuentaId)
+                .map(account -> {
+                    String email = account.getCreador().getEmail();
+                    String raw = cuentaId + ":" + expiration + ":" + email;
+                    return Base64.getEncoder().encodeToString(raw.getBytes(StandardCharsets.UTF_8));
+                });
+    }
 }

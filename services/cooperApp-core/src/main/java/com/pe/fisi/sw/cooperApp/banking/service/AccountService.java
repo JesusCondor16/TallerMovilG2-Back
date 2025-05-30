@@ -12,4 +12,5 @@ public interface AccountService {
     Mono<List<AccountResponse>> getAllAcountsOwnerOfByUuid(String uuid);
     Mono<List<AccountResponse>> getAllAcountsMemberOfByUuid(String uuid);
     Mono<List<AccountUserDto>> getAllMembersOfByAccountId(String accountId);
+    Mono<String> generateCode(String accountId);
 }

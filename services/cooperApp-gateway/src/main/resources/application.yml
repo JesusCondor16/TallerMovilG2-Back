@@ -28,7 +28,14 @@ spring:
         - id: cooperApp
           uri: lb://cooperApp
           predicates:
-            - Path=/v1/**
+            - Path=/v1/auth/**,/v1/accounts/**
+          filters:
+            - StripPrefix=0
+            - PreserveHostHeader
+        - id: cooperApp-notificacion-service
+          uri: lb://cooperApp-notificacion-service
+          predicates:
+            - Path=/v1/notifications/**
           filters:
             - StripPrefix=0
             - PreserveHostHeader
@@ -63,6 +70,6 @@ management:
       access: unrestricted
 
 # Agregar logging para debug
-logging:
-  level:
-    org.springframework.cloud.gateway: DEBUG
+#logging:
+ # level:
+ #   org.springframework.cloud.gateway: DEBUG

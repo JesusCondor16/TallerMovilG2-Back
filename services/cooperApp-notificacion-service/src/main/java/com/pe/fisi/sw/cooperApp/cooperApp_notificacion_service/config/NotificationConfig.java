@@ -1,6 +1,6 @@
-package com.pe.fisi.sw.cooperApp.banking.config;
+package com.pe.fisi.sw.cooperApp.cooperApp_notificacion_service.config;
 
-import com.pe.fisi.sw.cooperApp.banking.dto.NotificationEvent;
+import com.pe.fisi.sw.cooperApp.cooperApp_notificacion_service.dto.NotificationEvent;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
