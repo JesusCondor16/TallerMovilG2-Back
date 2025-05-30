@@ -35,3 +35,4 @@ build/
 ## coopearAuth
 cooperApp-core/src/main/resources/cooperauthapp-firebase-admin.json
 cooperApp-notificacion-service/src/main/resources/cooperauthapp-firebase-admin.json
+cooperApp-gateway/src/main/resources/cooperauthapp-firebase-admin.json
