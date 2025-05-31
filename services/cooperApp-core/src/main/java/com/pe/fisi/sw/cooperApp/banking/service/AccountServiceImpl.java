@@ -4,6 +4,7 @@ import com.google.cloud.firestore.Firestore;
 import com.pe.fisi.sw.cooperApp.banking.dto.Account;
 import com.pe.fisi.sw.cooperApp.banking.dto.AccountResponse;
 import com.pe.fisi.sw.cooperApp.banking.dto.CreateAccountRequest;
+import com.pe.fisi.sw.cooperApp.banking.mapper.AccountMapper;
 import com.pe.fisi.sw.cooperApp.banking.repository.AccountRepository;
 import com.pe.fisi.sw.cooperApp.security.exceptions.CustomException;
 import com.pe.fisi.sw.cooperApp.users.dto.AccountUserDto;
@@ -27,7 +28,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository repository;
     private final UserService userService;
     private final Firestore firestore;
-
+    private final AccountMapper accountMapper;
     @Override
     public Mono<AccountResponse> createAccount(CreateAccountRequest request) {
         return userService.findByUid(request.getCreadorUid())
@@ -85,5 +86,10 @@ public class AccountServiceImpl implements AccountService {
                     String raw = cuentaId + ":" + expiration + ":" + email;
                     return Base64.getEncoder().encodeToString(raw.getBytes(StandardCharsets.UTF_8));
                 });
+    }
+
+    @Override
+    public Mono<AccountResponse> getAccountDetails(String cuentauid) {
+        return repository.getAccountById(cuentauid).map(accountMapper::toResponse);
     }
 }

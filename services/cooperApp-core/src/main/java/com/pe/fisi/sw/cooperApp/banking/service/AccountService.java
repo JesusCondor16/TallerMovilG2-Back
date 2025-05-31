@@ -1,5 +1,6 @@
 package com.pe.fisi.sw.cooperApp.banking.service;
 
+import com.google.common.io.Files;
 import com.pe.fisi.sw.cooperApp.banking.dto.AccountResponse;
 import com.pe.fisi.sw.cooperApp.banking.dto.CreateAccountRequest;
 import com.pe.fisi.sw.cooperApp.users.dto.AccountUserDto;
@@ -13,4 +14,5 @@ public interface AccountService {
     Mono<List<AccountResponse>> getAllAcountsMemberOfByUuid(String uuid);
     Mono<List<AccountUserDto>> getAllMembersOfByAccountId(String accountId);
     Mono<String> generateCode(String accountId);
+    Mono<AccountResponse> getAccountDetails(String cuentauid);
 }
