@@ -27,7 +27,7 @@ public class BankingController {
         return accountService.createAccount(request)
                 .map(ResponseEntity::ok);
     }
-    @GetMapping("/get-owner/{userUid}")
+    @GetMapping("/get-accounts/{userUid}")
     public Mono<ResponseEntity<List<AccountResponse>>> getAllAccountsOwnerOf(@PathVariable String userUid) {
         return accountService.getAllAcountsOwnerOfByUuid(userUid).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
     }

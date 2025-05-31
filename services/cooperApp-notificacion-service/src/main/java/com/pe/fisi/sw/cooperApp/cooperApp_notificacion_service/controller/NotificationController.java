@@ -1,12 +1,12 @@
 package com.pe.fisi.sw.cooperApp.cooperApp_notificacion_service.controller;
 
+import com.pe.fisi.sw.cooperApp.cooperApp_notificacion_service.dto.NotificationEvent;
 import com.pe.fisi.sw.cooperApp.cooperApp_notificacion_service.service.NotificationProdService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -14,6 +14,16 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class NotificationController {
     private final NotificationProdService notificationService;
+    @GetMapping("/get-all")
+    public ResponseEntity<Flux<NotificationEvent>> getNotificaciones(
+            @RequestParam String cuentaId
+    ) {
+        Flux<NotificationEvent> notifications = notificationService.getNotifications(cuentaId);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(notifications);
+    }
     @PostMapping("/invite-member")
     public Mono<ResponseEntity<String>> inviteUserToAccount(
             @RequestParam String email,      // Email del invitado
