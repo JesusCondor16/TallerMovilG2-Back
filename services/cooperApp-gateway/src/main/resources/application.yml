@@ -1,11 +1,12 @@
+# CooperApp Gateway
 spring:
   config:
-    import: optional:configserver:http://localhost:8888
+    import: optional:configserver:http://cooperapp-cloudserver:8888  # Cambió de localhost
   application:
     name: cooperApp-gateway
   cloud:
     config:
-      uri: http://localhost:8888
+      uri: http://cooperapp-cloudserver:8888  # Cambió de localhost
       enabled: true
     gateway:
       discovery:
@@ -46,18 +47,17 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://discovery-server:8761/eureka  # Cambió de localhost
     fetch-registry: true
     register-with-eureka: true
   instance:
-    hostname: localhost
+    hostname: gateway  # Cambió de localhost
     instance-id: ${spring.application.name}:${server.port}
-    prefer-ip-address: true
-    ip-address: 127.0.0.1
+    prefer-ip-address: false  # Cambió a false para usar hostname
     non-secure-port: 8222
-    home-page-url: http://localhost:8222/
+    home-page-url: http://gateway:8222/  # Cambió hostname
 
-# Agregar configuraci�n de actuator
+# Configuración de actuator
 management:
   endpoints:
     web:
@@ -69,7 +69,7 @@ management:
     gateway:
       access: unrestricted
 
-# Agregar logging para debug
+# Logging para debug (opcional)
 #logging:
- # level:
- #   org.springframework.cloud.gateway: DEBUG
+#  level:
+#    org.springframework.cloud.gateway: DEBUG

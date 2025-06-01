@@ -1,8 +1,8 @@
-# Etapa de construcción
+# Etapa de construcción discovery
 FROM ubuntu:latest AS build
 
 # Instala Maven y JDK 21 en la imagen base
-RUN apt-get update && apt-get install -y openjdk-21-jdk maven
+RUN apt-get update && apt-get install -y openjdk-21-jdk maven &&  apt-get install -y curl
 
 # Crea un directorio para la aplicación
 WORKDIR /app
@@ -15,6 +15,9 @@ RUN mvn clean package -DskipTests
 
 # Etapa de ejecución
 FROM openjdk:21-jdk-slim
+
+# Instalar curl para healthchecks
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 # Exponer el puerto 8080 para la API
 EXPOSE 8761

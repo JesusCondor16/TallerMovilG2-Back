@@ -27,7 +27,7 @@ public class BankingController {
         return accountService.createAccount(request)
                 .map(ResponseEntity::ok);
     }
-    @GetMapping("/get-cuenta/{cuentaUid}")
+    @GetMapping("/get-account/{cuentaUid}")
     public Mono<ResponseEntity<AccountResponse>> getAccountDetails(@PathVariable String cuentaUid) {
         return accountService.getAccountDetails(cuentaUid).map(ResponseEntity::ok);
     }

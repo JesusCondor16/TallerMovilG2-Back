@@ -16,11 +16,14 @@ RUN mvn clean package -DskipTests
 # Etapa de ejecución
 FROM openjdk:21-jdk-slim
 
-# Exponer el puerto 8080 para la API
+# Instalar curl para healthchecks
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
+# Exponer el puerto 8888 para la API
 EXPOSE 8888
 
 # Copia el archivo JAR generado desde la etapa de construcción
-COPY --from=build /app/target/cooperApp-cloud-0.0.1.jar discovery.jar
+COPY --from=build /app/target/cooperApp-cloud-0.0.1.jar config-server.jar
 
 # Define el comando para ejecutar la aplicación
 ENTRYPOINT ["java", "-jar", "config-server.jar"]

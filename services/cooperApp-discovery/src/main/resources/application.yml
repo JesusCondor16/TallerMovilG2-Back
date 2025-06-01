@@ -1,19 +1,29 @@
-#CooperApp Discovery
 # CooperApp Discovery
 spring:
   config:
-    import: optional:configserver:http://localhost:8888
+    import: optional:configserver:http://cooperapp-cloudserver:8888
   application:
     name: cooperApp-discovery
   cloud:
     config:
       fail-fast: true
+      uri: http://cooperapp-cloudserver:8888
 
 server:
   port: 8761
 
 eureka:
+  instance:
+    hostname: discovery-server
   client:
     register-with-eureka: false
     fetch-registry: false
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always

@@ -1,9 +1,10 @@
+# cooperapp Core
 spring:
   application:
     name: cooperApp
   kafka:
     producer:
-      bootstrap-servers: localhost:9092
+      bootstrap-servers: kafka:9092  # Cambió de localhost:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     properties:
@@ -28,16 +29,16 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://discovery-server:8761/eureka  # Cambió de localhost
   instance:
-    hostname: localhost
+    hostname: cooperapp-core  # Cambió de localhost
     instance-id: ${spring.application.name}:${server.port}
-    prefer-ip-address: true
-    ip-address: 127.0.0.1
+    prefer-ip-address: false  # Cambió a false para usar hostname
     non-secure-port: 8080
-    home-page-url: http://localhost:8080/
-    status-page-url: http://localhost:8080/actuator/info
-    health-check-url: http://localhost:8080/actuator/health
+    home-page-url: http://cooperapp-core:8080/  # Cambió hostname
+    status-page-url: http://cooperapp-core:8080/actuator/info
+    health-check-url: http://cooperapp-core:8080/actuator/health
+
 management:
   endpoints:
     web:
