@@ -37,4 +37,12 @@ public class BankingController {
     public Mono<ResponseEntity<List<AccountUserDto>>> getAllMembersOfAccount(@PathVariable String cuentaId) {
         return accountService.getAllMembersOfByAccountId(cuentaId).map(ResponseEntity::ok).defaultIfEmpty(ResponseEntity.notFound().build());
     }
+    @GetMapping("/generate-code")
+    public Mono<ResponseEntity<String>> generateInviteCode(@RequestParam String cuentaId) {
+        return accountService.generateCode(cuentaId).map(ResponseEntity::ok);
+    }
+    @GetMapping("/get-account/{cuentaUid}")
+    public Mono<ResponseEntity<AccountResponse>> getAccount(@PathVariable String cuentaUid) {
+        return accountService.getAccountDetails(cuentaUid).map(ResponseEntity::ok);
+    }
 }

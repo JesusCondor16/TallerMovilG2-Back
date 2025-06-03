@@ -1,10 +1,7 @@
 package com.pe.fisi.sw.cooperApp.banking.repository;
 
 import com.google.api.core.ApiFuture;
-import com.google.cloud.firestore.CollectionReference;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.QueryDocumentSnapshot;
-import com.google.cloud.firestore.QuerySnapshot;
+import com.google.cloud.firestore.*;
 import com.pe.fisi.sw.cooperApp.banking.dto.Account;
 import com.pe.fisi.sw.cooperApp.banking.dto.AccountResponse;
 import com.pe.fisi.sw.cooperApp.banking.mapper.AccountMapper;
@@ -84,5 +81,27 @@ public class AccountRepository {
             Account account = documents.get(0).toObject(Account.class);
             return account.getMiembros();
         }).flatMapMany(Flux::fromIterable).subscribeOn(Schedulers.boundedElastic());
+    }
+    public Mono<Account> getAccountById(String cuentaId) {
+        return Mono.fromCallable(() -> {
+            CollectionReference accounts = firestore.collection(ACCOUNTS);
+            ApiFuture<QuerySnapshot> future = accounts.whereEqualTo("cuentaId", cuentaId).get();
+            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+            if (documents.isEmpty()) {
+                throw new CustomException(HttpStatus.NOT_FOUND, "Cuenta no encontrada con ID: " + cuentaId);
+            }
+            return documents.get(0).toObject(Account.class);
+        }).subscribeOn(Schedulers.boundedElastic());
+    }
+    public Mono<String> getNombreCuenta(String cuentaId) {
+        return Mono.fromCallable(() -> {
+            DocumentSnapshot snapshot = firestore.collection(ACCOUNTS).document(cuentaId).get().get();
+            Account account = snapshot.toObject(Account.class);
+            if (account != null) {
+                return account.getNombreCuenta();
+            } else {
+                throw new CustomException(HttpStatus.BAD_REQUEST,"Cuenta no encontrada");
+            }
+        }).subscribeOn(Schedulers.boundedElastic());
     }
 }

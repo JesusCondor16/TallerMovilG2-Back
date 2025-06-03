@@ -4,6 +4,7 @@ import com.google.cloud.firestore.Firestore;
 import com.pe.fisi.sw.cooperApp.banking.dto.Account;
 import com.pe.fisi.sw.cooperApp.banking.dto.AccountResponse;
 import com.pe.fisi.sw.cooperApp.banking.dto.CreateAccountRequest;
+import com.pe.fisi.sw.cooperApp.banking.mapper.AccountMapper;
 import com.pe.fisi.sw.cooperApp.banking.repository.AccountRepository;
 import com.pe.fisi.sw.cooperApp.security.exceptions.CustomException;
 import com.pe.fisi.sw.cooperApp.users.dto.AccountUserDto;
@@ -15,7 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -25,7 +28,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository repository;
     private final UserService userService;
     private final Firestore firestore;
-
+    private final AccountMapper accountMapper;
     @Override
     public Mono<AccountResponse> createAccount(CreateAccountRequest request) {
         return userService.findByUid(request.getCreadorUid())
@@ -74,4 +77,20 @@ public class AccountServiceImpl implements AccountService {
         return repository.getAllMembersOfByAccountId(accountId).collectList();
     }
 
+    @Override
+    public Mono<String> generateCode(String cuentaId) {
+        long expiration = System.currentTimeMillis() + 3600_000;
+
+        return repository.getAccountById(cuentaId)
+                .map(account -> {
+                    String email = account.getCreador().getEmail();
+                    String raw = cuentaId + ":" + expiration + ":" + email;
+                    return Base64.getEncoder().encodeToString(raw.getBytes(StandardCharsets.UTF_8));
+                });
+    }
+
+    @Override
+    public Mono<AccountResponse> getAccountDetails(String cuentauid) {
+        return repository.getAccountById(cuentauid).map(accountMapper::toResponse);
+    }
 }
