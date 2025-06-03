@@ -1,14 +1,18 @@
 package com.pe.fisi.sw.cooperApp.banking.dto;
 
-import com.pe.fisi.sw.cooperApp.users.dto.User;
+import com.pe.fisi.sw.cooperApp.users.dto.AccountUserDto;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.List;
 
 @Data
 @Builder
+@NoArgsConstructor(access = lombok.AccessLevel.PUBLIC)
+@AllArgsConstructor
 public class Account {
     private String cuentaId;
     private String nombreCuenta;
@@ -17,7 +21,9 @@ public class Account {
     private String moneda;
     private float saldo;
     private String descripcion;
-    private User creador;
+    private AccountUserDto creador;
     private Instant fechaCreacion;
-    private List<String> miembros;
+    private List<AccountUserDto> miembros;
+    private List<String> miembrosUid;
 }
+

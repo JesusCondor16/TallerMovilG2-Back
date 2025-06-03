@@ -1,5 +1,6 @@
 package com.pe.fisi.sw.cooperApp.security.service;
 
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.UserRecord;
 import com.pe.fisi.sw.cooperApp.security.dto.RegisterRequest;
@@ -7,17 +8,20 @@ import com.pe.fisi.sw.cooperApp.security.dto.TokenResponse;
 import com.pe.fisi.sw.cooperApp.security.exceptions.CustomException;
 import com.pe.fisi.sw.cooperApp.users.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FirebaseAuthService {
     private final WebClient webClient;
     @Value("${firebase.api-key}")
@@ -122,5 +126,21 @@ public class FirebaseAuthService {
             return "Contraseña actualizada";
         });
     }
-
+    public Mono<String> getUidByEmail(String email) {
+        return Mono.fromCallable(() -> {
+            try {
+                UserRecord user = FirebaseAuth.getInstance()
+                        .getUserByEmail(email);
+                return user.getUid();
+            } catch (Exception e) {
+                throw new CustomException(HttpStatus.NOT_FOUND, "Usuario no encontrado con email: " + email);
+            }
+        });
+    }
+    public Mono<String> getEmailByUid(String uid) {
+        return Mono.fromCallable(() -> {
+            UserRecord userRecord = FirebaseAuth.getInstance().getUser(uid);
+            return userRecord.getEmail();
+        }).subscribeOn(Schedulers.boundedElastic());
+    }
 }
