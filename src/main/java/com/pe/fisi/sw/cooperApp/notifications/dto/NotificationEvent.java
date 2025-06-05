@@ -20,4 +20,5 @@ public class NotificationEvent {
     private String idSolcitante; // id genero la solcitud
     private String estado;
     private Instant fechaCreacion;
+    private Instant fechaModificacion;
 }

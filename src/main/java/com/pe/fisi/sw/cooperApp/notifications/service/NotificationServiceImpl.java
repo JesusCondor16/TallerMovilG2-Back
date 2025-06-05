@@ -5,6 +5,7 @@ import com.pe.fisi.sw.cooperApp.notifications.dto.NotificationEvent;
 import com.pe.fisi.sw.cooperApp.notifications.repository.NotificationRepository;
 import com.pe.fisi.sw.cooperApp.security.exceptions.CustomException;
 import com.pe.fisi.sw.cooperApp.security.service.FirebaseAuthService;
+import com.pe.fisi.sw.cooperApp.users.dto.AccountUserDto;
 import com.pe.fisi.sw.cooperApp.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -119,5 +120,32 @@ public class NotificationServiceImpl implements NotificationService {
                         return notificationRepository.saveNotification(event);
                     });
                 });
+    }
+    @Override
+    public Mono<String> acceptMember(String idNotificacion) {
+        return notificationRepository.findById(idNotificacion)
+                .flatMap(notification -> {
+                    String idCuenta = notification.getIdCuenta();
+                    String idSolicitante = notification.getIdSolcitante();
+
+                    return userRepository.getUserAsAccountDto(idSolicitante)
+                            .flatMap(accountUserDto -> {
+                                // Ejecutar las operaciones en paralelo
+                                Mono<Void> updateNotification = notificationRepository
+                                        .updateNotificationStatus(idNotificacion, "aceptada");
+
+                                Mono<Void> addMember = accountRepository
+                                        .addMemberToAccount(idCuenta, accountUserDto);
+
+                                return Mono.when(updateNotification, addMember)
+                                        .thenReturn("Miembro aceptado y agregado correctamente.");
+                            });
+                });
+    }
+
+    @Override
+    public Mono<String> rejectMember(String idNotificacion) {
+        return notificationRepository.updateNotificationStatus(idNotificacion, "rechazada")
+                .thenReturn("Solicitud de membresía rechazada correctamente.");
     }
 }

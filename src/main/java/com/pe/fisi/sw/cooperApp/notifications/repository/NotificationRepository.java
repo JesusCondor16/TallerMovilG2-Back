@@ -1,6 +1,8 @@
 package com.pe.fisi.sw.cooperApp.notifications.repository;
 
-import com.google.cloud.firestore.Firestore;
+import com.google.api.core.ApiFuture;
+import com.google.cloud.firestore.*;
+import com.pe.fisi.sw.cooperApp.banking.dto.Account;
 import com.pe.fisi.sw.cooperApp.notifications.dto.NotificationEvent;
 import com.pe.fisi.sw.cooperApp.notifications.mapper.NotificationMapper;
 import com.pe.fisi.sw.cooperApp.security.exceptions.CustomException;
@@ -13,6 +15,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Repository
@@ -26,6 +30,19 @@ public class NotificationRepository {
     private Firestore firestore;
 
     private static final String NOTIFICATIONS = "Notifications";
+
+    public Mono<NotificationEvent> findById(String idNotificacion) {
+        return Mono.fromCallable(() -> {
+            DocumentSnapshot snapshot = firestore.collection(NOTIFICATIONS)
+                    .document(idNotificacion)
+                    .get()
+                    .get(); // <- .get() bloqueante
+            if (!snapshot.exists()) {
+                throw new CustomException(HttpStatus.NOT_FOUND, "No se encontró notificación con ID: " + idNotificacion);
+            }
+            return snapshot.toObject(NotificationEvent.class);
+        }).subscribeOn(Schedulers.boundedElastic());
+    }
 
     public Flux<NotificationEvent> getNotifications(String accountId) {
         return Mono.fromFuture(
@@ -57,5 +74,14 @@ public class NotificationRepository {
                     return Mono.error(new RuntimeException("Error al guardar notificación", e));
                 });
     }
-
+    public Mono<Void> updateNotificationStatus(String idNotificacion, String estado) {
+        return Mono.fromCallable(() -> {
+            DocumentReference docRef = firestore.collection(NOTIFICATIONS).document(idNotificacion);
+            docRef.update(
+                    "estado", estado,
+                    "fechaModificacion", Instant.now()
+            ).get();
+            return null;
+        }).subscribeOn(Schedulers.boundedElastic()).then();
+    }
 }

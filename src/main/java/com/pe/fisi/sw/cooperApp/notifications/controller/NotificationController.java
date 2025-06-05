@@ -41,5 +41,12 @@ public class NotificationController {
         return notificationService.requestAccess(code, requesterUid)
                 .thenReturn(ResponseEntity.ok("Solicitud enviada"));
     }
-
+    @PostMapping("/accept-member")
+    public Mono<ResponseEntity<String>> acceptMemberToAccount(@RequestParam String idNotificacion){
+        return notificationService.acceptMember(idNotificacion).thenReturn(ResponseEntity.ok("Solicitud aceptada"));
+    }
+    @PostMapping("/reject-member")
+    public Mono<ResponseEntity<String>> rejectMemberToAccount(@RequestParam String idNotificacion){
+        return notificationService.rejectMember(idNotificacion).thenReturn(ResponseEntity.ok("Solicitud rechazada"));
+    }
 }
