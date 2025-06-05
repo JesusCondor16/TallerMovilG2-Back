@@ -15,6 +15,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -103,5 +104,41 @@ public class AccountRepository {
                 throw new CustomException(HttpStatus.BAD_REQUEST,"Cuenta no encontrada");
             }
         }).subscribeOn(Schedulers.boundedElastic());
+    }
+
+    public Mono<Void> addMemberToAccount(String accountId, AccountUserDto newMember) {
+        return Mono.fromCallable(() -> {
+            DocumentReference docRef = firestore.collection(ACCOUNTS).document(accountId);
+            DocumentSnapshot snapshot = docRef.get().get();
+
+            if (!snapshot.exists()) {
+                throw new CustomException(HttpStatus.NOT_FOUND, "Cuenta no encontrada con ID: " + accountId);
+            }
+
+            Account account = snapshot.toObject(Account.class);
+
+            // Inicializar listas si son null
+            if (account.getMiembrosUid() == null) {
+                account.setMiembrosUid(new ArrayList<>());
+            }
+            if (account.getMiembros() == null) {
+                account.setMiembros(new ArrayList<>());
+            }
+
+            // Verificar si ya es miembro y agregarlo si no lo es
+            if (!account.getMiembrosUid().contains(newMember.getUid())) {
+                account.getMiembrosUid().add(newMember.getUid());
+            }
+
+            boolean yaEsMiembro = account.getMiembros().stream()
+                    .anyMatch(m -> m.getUid().equals(newMember.getUid()));
+            if (!yaEsMiembro) {
+                account.getMiembros().add(newMember);
+            }
+
+            // Actualizar la cuenta
+            docRef.set(account).get();
+            return null;
+        }).subscribeOn(Schedulers.boundedElastic()).then();
     }
 }

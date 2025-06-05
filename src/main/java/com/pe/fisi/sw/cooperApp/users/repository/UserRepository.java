@@ -4,6 +4,7 @@ import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
+import com.pe.fisi.sw.cooperApp.users.dto.AccountUserDto;
 import com.pe.fisi.sw.cooperApp.users.dto.EditRequest;
 import com.pe.fisi.sw.cooperApp.security.exceptions.CustomException;
 import com.pe.fisi.sw.cooperApp.users.dto.User;
@@ -22,7 +23,6 @@ public class UserRepository {
             DocumentSnapshot snapshot = firestore.collection("Users").document(id).get().get();
             return snapshot.toObject(User.class);
         }).subscribeOn(Schedulers.boundedElastic());
-
     }
     public Mono<User> edituser(EditRequest editRequest) {
         return Mono.fromCallable(()->{
@@ -54,5 +54,15 @@ public class UserRepository {
             User user = doc.toObject(User.class);
             return user.getNombre() + " " + user.getApellido();
         }).subscribeOn(Schedulers.boundedElastic());
+    }
+    public Mono<AccountUserDto> getUserAsAccountDto(String userId) {
+        return findById(userId)
+                .map(user -> AccountUserDto.builder()
+                        .uid(user.getUid())
+                        .fullName(user.getNombre() + " " + user.getApellido())
+                        .dni(user.getDni())
+                        .email(user.getEmail())
+                        .tipoDocumento(user.getTipoDocumento())
+                        .build());
     }
 }
