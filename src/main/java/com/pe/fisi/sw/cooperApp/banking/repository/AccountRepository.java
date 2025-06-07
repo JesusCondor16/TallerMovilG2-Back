@@ -58,6 +58,25 @@ public class AccountRepository {
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
+    public Mono<String> getOwnerUidOfAccount(String cuentaId) {
+        return Mono.fromCallable(() -> {
+            CollectionReference accounts = firestore.collection(ACCOUNTS);
+            ApiFuture<QuerySnapshot> future = accounts.whereEqualTo("cuentaId", cuentaId).get();
+            List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+            if (documents.isEmpty()) {
+                throw new CustomException(HttpStatus.NOT_FOUND, "Cuenta no encontrada con ID: " + cuentaId);
+            }
+
+            Account account = documents.get(0).toObject(Account.class);
+            if (account.getCreador() == null || account.getCreador().getUid() == null) {
+                throw new CustomException(HttpStatus.BAD_REQUEST, "Cuenta sin creador válido.");
+            }
+
+            return account.getCreador().getUid();
+        }).subscribeOn(Schedulers.boundedElastic());
+    }
+
     public Flux<AccountResponse> getAllAccountsMemberOfByUuid(String uuid) {
         return Mono.fromCallable(() -> {
                     CollectionReference accounts = firestore.collection(ACCOUNTS);
@@ -141,4 +160,5 @@ public class AccountRepository {
             return null;
         }).subscribeOn(Schedulers.boundedElastic()).then();
     }
+
 }

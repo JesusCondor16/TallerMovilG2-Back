@@ -34,3 +34,6 @@ build/
 
 ## coopearAuth
 src/main/resources/cooperauthapp-firebase-admin.json
+
+## google Drive
+src/main/resources/google-drive.json
