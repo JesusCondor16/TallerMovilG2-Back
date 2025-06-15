@@ -4,7 +4,7 @@ import com.google.cloud.firestore.Firestore;
 import com.pe.fisi.sw.cooperApp.banking.dto.ReportRequest;
 import com.pe.fisi.sw.cooperApp.banking.repository.AccountRepository;
 import com.pe.fisi.sw.cooperApp.files.service.FileUploader;
-import com.pe.fisi.sw.cooperApp.notifications.dto.NotificationEvent;
+import com.pe.fisi.sw.cooperApp.notifications.model.NotificationEvent;
 import com.pe.fisi.sw.cooperApp.notifications.service.NotificationService;
 import com.pe.fisi.sw.cooperApp.security.exceptions.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -13,12 +13,9 @@ import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor

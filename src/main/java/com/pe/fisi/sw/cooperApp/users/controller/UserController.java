@@ -3,7 +3,7 @@ package com.pe.fisi.sw.cooperApp.users.controller;
 import com.pe.fisi.sw.cooperApp.users.dto.EditRequest;
 import com.pe.fisi.sw.cooperApp.security.exceptions.CustomException;
 import com.pe.fisi.sw.cooperApp.security.validator.CustomValidator;
-import com.pe.fisi.sw.cooperApp.users.dto.User;
+import com.pe.fisi.sw.cooperApp.users.model.User;
 import com.pe.fisi.sw.cooperApp.users.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

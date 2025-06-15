@@ -1,4 +1,4 @@
-package com.pe.fisi.sw.cooperApp.banking.dto;
+package com.pe.fisi.sw.cooperApp.banking.model;
 
 import com.pe.fisi.sw.cooperApp.users.dto.AccountUserDto;
 import lombok.AllArgsConstructor;

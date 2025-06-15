@@ -5,7 +5,7 @@ import com.pe.fisi.sw.cooperApp.banking.dto.CreateAccountRequest;
 import com.pe.fisi.sw.cooperApp.banking.dto.ReportRequest;
 import com.pe.fisi.sw.cooperApp.banking.service.AccountReportService;
 import com.pe.fisi.sw.cooperApp.banking.service.AccountService;
-import com.pe.fisi.sw.cooperApp.notifications.dto.NotificationEvent;
+import com.pe.fisi.sw.cooperApp.notifications.model.NotificationEvent;
 import com.pe.fisi.sw.cooperApp.security.exceptions.CustomException;
 import com.pe.fisi.sw.cooperApp.security.validator.CustomValidator;
 import com.pe.fisi.sw.cooperApp.security.validator.FileValidator;

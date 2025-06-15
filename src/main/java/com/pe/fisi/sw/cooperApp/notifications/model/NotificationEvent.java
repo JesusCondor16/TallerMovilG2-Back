@@ -1,4 +1,4 @@
-package com.pe.fisi.sw.cooperApp.notifications.dto;
+package com.pe.fisi.sw.cooperApp.notifications.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

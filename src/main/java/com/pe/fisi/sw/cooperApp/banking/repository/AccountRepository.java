@@ -2,9 +2,9 @@ package com.pe.fisi.sw.cooperApp.banking.repository;
 
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
-import com.pe.fisi.sw.cooperApp.banking.dto.Account;
+import com.pe.fisi.sw.cooperApp.banking.model.Account;
 import com.pe.fisi.sw.cooperApp.banking.dto.AccountResponse;
-import com.pe.fisi.sw.cooperApp.banking.mapper.AccountMapper;
+import com.pe.fisi.sw.cooperApp.banking.mapper.AccountResponseMapper;
 import com.pe.fisi.sw.cooperApp.security.exceptions.CustomException;
 import com.pe.fisi.sw.cooperApp.users.dto.AccountUserDto;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class AccountRepository {
     @Autowired
     Firestore firestore;
     private static final String ACCOUNTS = "Accounts";
-    private final AccountMapper mapper;
+    private final AccountResponseMapper mapper;
     public Mono<AccountResponse> crearCuenta(Account cuenta) {
         return Mono.fromCallable(() -> {
                     var docRef = firestore.collection(ACCOUNTS).document();

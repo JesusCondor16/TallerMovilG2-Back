@@ -1,6 +1,6 @@
 package com.pe.fisi.sw.cooperApp.notifications.service;
 
-import com.pe.fisi.sw.cooperApp.notifications.dto.NotificationEvent;
+import com.pe.fisi.sw.cooperApp.notifications.model.NotificationEvent;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
