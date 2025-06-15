@@ -12,4 +12,6 @@ public interface NotificationService {
     Mono<String> acceptMember(String idNotificacion);
 
     Mono<String> rejectMember(String idNotificacion);
+    Mono<NotificationEvent> notifyAccountReport(String cuentaId, String reporterId, String ownerUid, String motivo, String urlsConcatenadas);
+
 }

@@ -17,6 +17,7 @@ import reactor.core.publisher.Mono;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -148,4 +149,24 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationRepository.updateNotificationStatus(idNotificacion, "rechazada")
                 .thenReturn("Solicitud de membresía rechazada correctamente.");
     }
+
+    @Override
+    public Mono<NotificationEvent> notifyAccountReport(String cuentaId, String reporterId, String ownerUid, String motivo, String urlsConcatenadas) {
+        String mensaje = "Motivo del reporte: " + motivo + "\nArchivos adjuntos:\n" + urlsConcatenadas;
+
+        NotificationEvent notification = NotificationEvent.builder()
+                .idNotification(UUID.randomUUID().toString())
+                .idCuenta(cuentaId)
+                .idSolcitante(reporterId)
+                .idUsuario(ownerUid)
+                .mensaje(mensaje)
+                .estado("pending")
+                .tipo("REPORTE_CUENTA")
+                .fechaCreacion(Instant.now())
+                .fechaModificacion(Instant.now())
+                .build();
+
+        return notificationRepository.saveNotification(notification).thenReturn(notification);
+    }
+
 }
