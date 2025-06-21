@@ -1,11 +1,11 @@
 package com.pe.fisi.sw.cooperApp.banking.service;
 
-import com.pe.fisi.sw.cooperApp.banking.dto.AccountResponse;
-import com.pe.fisi.sw.cooperApp.banking.dto.CreateAccountRequest;
+import com.pe.fisi.sw.cooperApp.banking.dto.*;
 import com.pe.fisi.sw.cooperApp.banking.mapper.AccountResponseMapper;
 import com.pe.fisi.sw.cooperApp.banking.model.AccountFactory;
 import com.pe.fisi.sw.cooperApp.banking.repository.AccountRepository;
 import com.pe.fisi.sw.cooperApp.notifications.codec.AccessCodeEncoder;
+import com.pe.fisi.sw.cooperApp.notifications.service.NotificationService;
 import com.pe.fisi.sw.cooperApp.security.exceptions.CustomException;
 import com.pe.fisi.sw.cooperApp.users.dto.AccountUserDto;
 import com.pe.fisi.sw.cooperApp.users.mapper.AccountUserMapper;
@@ -28,6 +28,8 @@ public class AccountServiceImpl implements AccountService {
     private final AccountFactory accountFactory;
     private final AccountUserMapper accountUserMapper;
     private final AccessCodeEncoder accessCodeEncoder;
+    private final NotificationService notificationService;
+
     @Override
     public Mono<AccountResponse> createAccount(CreateAccountRequest request) {
         return userService.findByUid(request.getCreadorUid())
@@ -67,6 +69,58 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Mono<AccountResponse> getAccountDetails(String cuentauid) {
         return repository.getAccountById(cuentauid).map(accountResponseMapper::toResponse);
+    }
+
+    @Override
+    public Mono<Void> deposit(DepositRequest request) {
+        return repository.getAccountById(request.getCuentaId())
+                .flatMap(account -> {
+                    if (!account.getMiembrosUid().contains(request.getUsuarioUid())) {
+                        return Mono.error(new CustomException(HttpStatus.FORBIDDEN, "Usuario no pertenece a la cuenta"));
+                    }
+                    account.setSaldo(account.getSaldo() + request.getMonto());
+                    return repository.actualizarCuenta(account)
+                            .then(notificationService.notifyDeposit(
+                                    request.getCuentaId(),
+                                    request.getUsuarioUid(),
+                                    request.getMonto()
+                            ));
+                });
+    }
+
+    @Override
+    public Mono<Void> withdraw(WithdrawRequest request) {
+        return repository.getAccountById(request.getCuentaId())
+                .flatMap(account -> {
+                    if (!account.getMiembrosUid().contains(request.getUsuarioUid())) {
+                        return Mono.error(new CustomException(HttpStatus.FORBIDDEN, "Usuario no pertenece a la cuenta"));
+                    }
+                    if (account.getSaldo() < request.getMonto()) {
+                        return Mono.error(new CustomException(HttpStatus.BAD_REQUEST, "Saldo insuficiente"));
+                    }
+                    account.setSaldo(account.getSaldo() - request.getMonto());
+                    return repository.actualizarCuenta(account)
+                            .then(notificationService.notifyWithdrawal(
+                                    request.getCuentaId(),
+                                    request.getUsuarioUid(),
+                                    request.getMonto()
+                            ));
+                });
+    }
+
+    @Override
+    public Mono<Void> invest(InvestmentRequest request) {
+        return repository.getAccountById(request.getCuentaId())
+                .flatMap(account -> {
+                    if (!account.getMiembrosUid().contains(request.getUsuarioUid())) {
+                        return Mono.error(new CustomException(HttpStatus.FORBIDDEN, "Usuario no pertenece a la cuenta"));
+                    }
+                    if (account.getSaldo() < request.getMonto()) {
+                        return Mono.error(new CustomException(HttpStatus.BAD_REQUEST, "Saldo insuficiente"));
+                    }
+                    account.setSaldo(account.getSaldo() - request.getMonto());
+                    return repository.actualizarCuenta(account);
+                });
     }
 
 }

@@ -140,4 +140,22 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationRepository.saveNotification(notification).thenReturn(notification);
     }
 
+    @Override
+    public Mono<Void> notifyDeposit(String cuentaId, String usuarioUid, float monto) {
+        String mensaje = "Se realizó un depósito de S/ " + monto + " en la cuenta.";
+        NotificationEvent notification = notificationFactory.createDepositNotification(
+                cuentaId, usuarioUid, monto, mensaje
+        );
+        return notificationRepository.saveNotification(notification);
+    }
+
+    @Override
+    public Mono<Void> notifyWithdrawal(String cuentaId, String usuarioUid, float monto) {
+        String mensaje = "Se realizó un retiro de S/ " + monto + " de la cuenta.";
+        NotificationEvent notification = notificationFactory.createWithdrawNotification(
+                cuentaId, usuarioUid, monto, mensaje
+        );
+        return notificationRepository.saveNotification(notification);
+    }
+
 }

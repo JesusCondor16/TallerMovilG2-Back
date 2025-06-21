@@ -1,7 +1,6 @@
 package com.pe.fisi.sw.cooperApp.banking.service;
 
-import com.pe.fisi.sw.cooperApp.banking.dto.AccountResponse;
-import com.pe.fisi.sw.cooperApp.banking.dto.CreateAccountRequest;
+import com.pe.fisi.sw.cooperApp.banking.dto.*;
 import com.pe.fisi.sw.cooperApp.users.dto.AccountUserDto;
 import reactor.core.publisher.Mono;
 
@@ -14,4 +13,7 @@ public interface AccountService {
     Mono<List<AccountUserDto>> getAllMembersOfByAccountId(String accountId);
     Mono<String> generateCode(String accountId);
     Mono<AccountResponse> getAccountDetails(String cuentauid);
+    Mono<Void> deposit(DepositRequest request);
+    Mono<Void> withdraw(WithdrawRequest request);
+    Mono<Void> invest(InvestmentRequest request);
 }

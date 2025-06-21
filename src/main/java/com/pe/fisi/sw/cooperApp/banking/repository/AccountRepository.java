@@ -160,5 +160,12 @@ public class AccountRepository {
             return null;
         }).subscribeOn(Schedulers.boundedElastic()).then();
     }
-
+    public Mono<Void> actualizarCuenta(Account account) {
+        return Mono.fromCallable(() -> {
+            firestore.collection("Accounts")
+                    .document(account.getCuentaId())
+                    .set(account).get();
+            return null;
+        }).subscribeOn(Schedulers.boundedElastic()).then();
+    }
 }

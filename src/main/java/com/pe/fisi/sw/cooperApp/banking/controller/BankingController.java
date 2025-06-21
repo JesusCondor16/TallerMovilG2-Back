@@ -1,8 +1,6 @@
 package com.pe.fisi.sw.cooperApp.banking.controller;
 
-import com.pe.fisi.sw.cooperApp.banking.dto.AccountResponse;
-import com.pe.fisi.sw.cooperApp.banking.dto.CreateAccountRequest;
-import com.pe.fisi.sw.cooperApp.banking.dto.ReportRequest;
+import com.pe.fisi.sw.cooperApp.banking.dto.*;
 import com.pe.fisi.sw.cooperApp.banking.service.AccountReportService;
 import com.pe.fisi.sw.cooperApp.banking.service.AccountService;
 import com.pe.fisi.sw.cooperApp.notifications.model.NotificationEvent;
@@ -70,5 +68,19 @@ public class BankingController {
         fileValidator.validateFiles(files);
         return accountReportService.reportAccount(request, files)
                 .map(ResponseEntity::ok);
+    }
+    @PostMapping("/deposit")
+    public Mono<ResponseEntity<Void>> deposit(@RequestBody DepositRequest request) {
+        return accountService.deposit(request).thenReturn(ResponseEntity.ok().build());
+    }
+
+    @PostMapping("/withdraw")
+    public Mono<ResponseEntity<Void>> withdraw(@RequestBody WithdrawRequest request) {
+        return accountService.withdraw(request).thenReturn(ResponseEntity.ok().build());
+    }
+
+    @PostMapping("/invest")
+    public Mono<ResponseEntity<Void>> invest(@RequestBody InvestmentRequest request) {
+        return accountService.invest(request).thenReturn(ResponseEntity.ok().build());
     }
 }

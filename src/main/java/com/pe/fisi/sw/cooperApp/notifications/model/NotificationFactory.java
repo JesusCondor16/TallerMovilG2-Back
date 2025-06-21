@@ -46,4 +46,29 @@ public class NotificationFactory {
                 .build();
     }
 
+    public NotificationEvent createDepositNotification(String cuentaId, String actorUid, float monto, String mensaje) {
+        return NotificationEvent.builder()
+                .idNotification(UUID.randomUUID().toString())
+                .idCuenta(cuentaId)
+                .idUsuario(actorUid)
+                .idSolcitante(actorUid)
+                .mensaje(mensaje)
+                .estado("completado")
+                .tipo(NotificationType.DEPOSITO.name())
+                .fechaCreacion(Instant.now())
+                .build();
+    }
+
+    public NotificationEvent createWithdrawNotification(String cuentaId, String actorUid, float monto, String mensaje) {
+        return NotificationEvent.builder()
+                .idNotification(UUID.randomUUID().toString())
+                .idCuenta(cuentaId)
+                .idUsuario(actorUid)
+                .idSolcitante(actorUid)
+                .mensaje(mensaje)
+                .estado("completado")
+                .tipo(NotificationType.RETIRO.name())
+                .fechaCreacion(Instant.now())
+                .build();
+    }
 }

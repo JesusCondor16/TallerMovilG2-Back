@@ -13,5 +13,6 @@ public interface NotificationService {
 
     Mono<String> rejectMember(String idNotificacion);
     Mono<NotificationEvent> notifyAccountReport(String cuentaId, String reporterId, String ownerUid, String motivo, String urlsConcatenadas);
-
+    Mono<Void> notifyDeposit(String cuentaId, String usuarioUid, float monto);
+    Mono<Void> notifyWithdrawal(String cuentaId, String usuarioUid, float monto);
 }
