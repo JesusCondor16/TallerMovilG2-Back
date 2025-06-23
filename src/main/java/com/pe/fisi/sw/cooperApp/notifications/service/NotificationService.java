@@ -15,4 +15,5 @@ public interface NotificationService {
     Mono<NotificationEvent> notifyAccountReport(String cuentaId, String reporterId, String ownerUid, String motivo, String urlsConcatenadas);
     Mono<Void> notifyDeposit(String cuentaId, String usuarioUid, float monto);
     Mono<Void> notifyWithdrawal(String cuentaId, String usuarioUid, float monto);
+    Mono<Void> notifyTransfer(String cuentaOrigenId, String cuentaDestinoId, String usuarioUid, float monto);
 }

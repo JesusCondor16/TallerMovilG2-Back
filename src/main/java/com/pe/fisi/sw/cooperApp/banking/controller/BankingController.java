@@ -83,4 +83,10 @@ public class BankingController {
     public Mono<ResponseEntity<Void>> invest(@RequestBody InvestmentRequest request) {
         return accountService.invest(request).thenReturn(ResponseEntity.ok().build());
     }
+
+    @PostMapping("/transfer")
+    public Mono<ResponseEntity<Void>> transfer(@RequestBody TransferRequest request) {
+        return accountService.transfer(request)
+                .thenReturn(ResponseEntity.ok().build());
+    }
 }

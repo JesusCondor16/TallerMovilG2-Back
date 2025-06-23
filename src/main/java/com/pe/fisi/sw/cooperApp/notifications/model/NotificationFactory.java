@@ -71,4 +71,17 @@ public class NotificationFactory {
                 .fechaCreacion(Instant.now())
                 .build();
     }
+
+    public NotificationEvent createTransferNotification(String cuentaId, String actorUid, float monto, String mensaje) {
+        return NotificationEvent.builder()
+                .idNotification(UUID.randomUUID().toString())
+                .idCuenta(cuentaId)
+                .idUsuario(actorUid)
+                .idSolcitante(actorUid)
+                .mensaje(mensaje)
+                .estado("completado")
+                .tipo(NotificationType.TRANSFERENCIA.name())
+                .fechaCreacion(Instant.now())
+                .build();
+    }
 }

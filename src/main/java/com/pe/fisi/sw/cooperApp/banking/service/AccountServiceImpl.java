@@ -123,4 +123,33 @@ public class AccountServiceImpl implements AccountService {
                 });
     }
 
+    @Override
+    public Mono<Void> transfer(TransferRequest request) {
+        return repository.getAccountById(request.getCuentaOrigenId())
+                .flatMap(origen -> {
+                    if (!origen.getMiembrosUid().contains(request.getUsuarioUid())) {
+                        return Mono.error(new CustomException(HttpStatus.FORBIDDEN, "Usuario no pertenece a la cuenta de origen"));
+                    }
+                    if (origen.getSaldo() < request.getMonto()) {
+                        return Mono.error(new CustomException(HttpStatus.BAD_REQUEST, "Saldo insuficiente en cuenta de origen"));
+                    }
+                    return repository.getAccountById(request.getCuentaDestinoId())
+                            .flatMap(destino -> {
+                                origen.setSaldo(origen.getSaldo() - request.getMonto());
+                                destino.setSaldo(destino.getSaldo() + request.getMonto());
+
+                                return Mono.when(
+                                        repository.actualizarCuenta(origen),
+                                        repository.actualizarCuenta(destino),
+                                        notificationService.notifyTransfer(
+                                                request.getCuentaOrigenId(),
+                                                request.getCuentaDestinoId(),
+                                                request.getUsuarioUid(),
+                                                request.getMonto()
+                                        )
+                                );
+                            });
+                });
+    }
+
 }

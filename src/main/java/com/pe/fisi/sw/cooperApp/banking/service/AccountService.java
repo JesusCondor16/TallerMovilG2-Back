@@ -16,4 +16,5 @@ public interface AccountService {
     Mono<Void> deposit(DepositRequest request);
     Mono<Void> withdraw(WithdrawRequest request);
     Mono<Void> invest(InvestmentRequest request);
+    Mono<Void> transfer(TransferRequest request);
 }

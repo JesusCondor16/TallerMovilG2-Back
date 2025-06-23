@@ -5,5 +5,6 @@ public enum NotificationType {
     SOLICITUD_ACCESO_CUENTA,
     REPORTE_CUENTA,
     RETIRO,
-    DEPOSITO
+    DEPOSITO,
+    TRANSFERENCIA
 }

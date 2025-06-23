@@ -158,4 +158,22 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationRepository.saveNotification(notification);
     }
 
+    @Override
+    public Mono<Void> notifyTransfer(String cuentaOrigenId, String cuentaDestinoId, String usuarioUid, float monto) {
+        String mensajeOrigen = "Se transfirió S/ " + monto + " desde esta cuenta hacia la cuenta " + cuentaDestinoId;
+        String mensajeDestino = "Se recibió una transferencia de S/ " + monto + " desde la cuenta " + cuentaOrigenId;
+
+        NotificationEvent notificacionOrigen = notificationFactory.createTransferNotification(
+                cuentaOrigenId, usuarioUid, monto, mensajeOrigen
+        );
+        NotificationEvent notificacionDestino = notificationFactory.createTransferNotification(
+                cuentaDestinoId, usuarioUid, monto, mensajeDestino
+        );
+
+        return Mono.when(
+                notificationRepository.saveNotification(notificacionOrigen),
+                notificationRepository.saveNotification(notificacionDestino)
+        );
+    }
+
 }
