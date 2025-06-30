@@ -1,6 +1,6 @@
 package com.pe.fisi.sw.cooperApp.notifications.controller;
 
-import com.pe.fisi.sw.cooperApp.notifications.dto.NotificationEvent;
+import com.pe.fisi.sw.cooperApp.notifications.model.NotificationEvent;
 import com.pe.fisi.sw.cooperApp.notifications.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;

@@ -1,73 +1,42 @@
 package com.pe.fisi.sw.cooperApp.banking.service;
 
-import com.google.cloud.firestore.Firestore;
-import com.pe.fisi.sw.cooperApp.banking.dto.Account;
-import com.pe.fisi.sw.cooperApp.banking.dto.AccountResponse;
-import com.pe.fisi.sw.cooperApp.banking.dto.CreateAccountRequest;
-import com.pe.fisi.sw.cooperApp.banking.dto.ReportRequest;
-import com.pe.fisi.sw.cooperApp.banking.mapper.AccountMapper;
+import com.pe.fisi.sw.cooperApp.banking.dto.*;
+import com.pe.fisi.sw.cooperApp.banking.mapper.AccountResponseMapper;
+import com.pe.fisi.sw.cooperApp.banking.model.AccountFactory;
 import com.pe.fisi.sw.cooperApp.banking.repository.AccountRepository;
-import com.pe.fisi.sw.cooperApp.notifications.dto.NotificationEvent;
+import com.pe.fisi.sw.cooperApp.notifications.codec.AccessCodeEncoder;
+import com.pe.fisi.sw.cooperApp.notifications.service.NotificationService;
 import com.pe.fisi.sw.cooperApp.security.exceptions.CustomException;
 import com.pe.fisi.sw.cooperApp.users.dto.AccountUserDto;
+import com.pe.fisi.sw.cooperApp.users.mapper.AccountUserMapper;
 import com.pe.fisi.sw.cooperApp.users.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
-import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository repository;
     private final UserService userService;
-    private final Firestore firestore;
-    private final AccountMapper accountMapper;
-    private final GoogleUploadDriveService uploader;
+    private final AccountResponseMapper accountResponseMapper;
+    private final AccountFactory accountFactory;
+    private final AccountUserMapper accountUserMapper;
+    private final AccessCodeEncoder accessCodeEncoder;
+    private final NotificationService notificationService;
+
     @Override
     public Mono<AccountResponse> createAccount(CreateAccountRequest request) {
         return userService.findByUid(request.getCreadorUid())
                 .switchIfEmpty(Mono.error(new CustomException(HttpStatus.NOT_FOUND,"Hubo un error no se encontro al creador de la cuenta")))
-                .flatMap(creador ->{
-                    log.info("Creador de la cuenta"+ creador.getUid());
-                    AccountUserDto owner = AccountUserDto.builder()
-                            .uid(creador.getUid())
-                            .fullName(creador.getNombre()+" "+ creador.getApellido())
-                            .dni(creador.getDni())
-                            .tipoDocumento(creador.getTipoDocumento())
-                            .email(creador.getEmail())
-                            .build();
-                    List<AccountUserDto> miembros = new ArrayList<>();
-                    List<String> miembrosUid = new ArrayList<>();
-                    miembrosUid.add(owner.getUid());
-                    miembros.add(owner);
-                    Account cuenta = Account.builder()
-                            .nombreCuenta(request.getNombre())
-                            .tipo(request.getTipo())
-                            .estado("Activo")
-                            .moneda(request.getMoneda())
-                            .saldo(request.getSaldo())
-                            .descripcion(request.getDescripcion())
-                            .creador(owner)
-                            .fechaCreacion(java.time.Instant.now())
-                            .miembros(miembros)
-                            .miembrosUid(miembrosUid)
-                            .build();
-                    return repository.crearCuenta(cuenta);
-                });
+                .map(accountUserMapper::toAccountUserDto)
+                .map(owner -> accountFactory.create(request,owner))
+                .flatMap(repository::crearCuenta);
     }
 
     @Override
@@ -90,73 +59,97 @@ public class AccountServiceImpl implements AccountService {
         long expiration = System.currentTimeMillis() + 3600_000;
 
         return repository.getAccountById(cuentaId)
-                .map(account -> {
-                    String email = account.getCreador().getEmail();
-                    String raw = cuentaId + ":" + expiration + ":" + email;
-                    return Base64.getEncoder().encodeToString(raw.getBytes(StandardCharsets.UTF_8));
-                });
+                .map(account -> accessCodeEncoder.encode(
+                        cuentaId,
+                        expiration,
+                        account.getCreador().getEmail()
+                ));
     }
 
     @Override
     public Mono<AccountResponse> getAccountDetails(String cuentauid) {
-        return repository.getAccountById(cuentauid).map(accountMapper::toResponse);
+        return repository.getAccountById(cuentauid).map(accountResponseMapper::toResponse);
     }
 
     @Override
-    public Mono<NotificationEvent> reportAccount(ReportRequest request, List<FilePart> files) {
-        return repository.getOwnerUidOfAccount(request.getCuentaUid())
-                .flatMap(ownerUid ->
-                        Flux.fromIterable(files)
-                                .flatMap(filePart -> {
-                                    // Guardar temporalmente cada archivo
-                                    return Mono.fromCallable(() -> {
-                                        java.io.File tempFile = java.io.File.createTempFile("upload-", filePart.filename());
-                                        return tempFile;
-                                    }).flatMap(tempFile ->
-                                            filePart.transferTo(tempFile.toPath())
-                                                    .thenReturn(tempFile)
-                                    );
-                                })
-                                .collectList()
-                                .flatMap(tempFiles -> {
-                                    // Subir a Google Drive
-
-                                    String urlsConcatenadas;
-                                    try {
-                                        urlsConcatenadas = uploader.uploadFiles(tempFiles, request.getCuentaUid());
-                                    } catch (IOException e) {
-                                        return Mono.error(new RuntimeException("Error subiendo archivos a Google Drive", e));
-                                    }
-
-                                    // Eliminar archivos temporales
-                                    tempFiles.forEach(java.io.File::delete);
-
-                                    // Crear mensaje
-                                    String mensaje = "Motivo del reporte: " + request.getMotivo()
-                                            + "\nArchivos adjuntos:\n" + urlsConcatenadas;
-
-                                    // Crear notificación
-                                    NotificationEvent notification = NotificationEvent.builder()
-                                            .idNotification(UUID.randomUUID().toString())
-                                            .idCuenta(request.getCuentaUid())
-                                            .idSolcitante(request.getReporterId())
-                                            .idUsuario(ownerUid)
-                                            .mensaje(mensaje)
-                                            .estado("pending")
-                                            .tipo("reporte")
-                                            .fechaCreacion(Instant.now())
-                                            .fechaModificacion(Instant.now())
-                                            .build();
-
-                                    // Guardar en Firestore (bloqueante, por eso en boundedElastic)
-                                    return Mono.fromCallable(() -> {
-                                        firestore.collection("Notifications")
-                                                .document(notification.getIdNotification())
-                                                .set(notification)
-                                                .get();
-                                        return notification;
-                                    }).subscribeOn(Schedulers.boundedElastic());
-                                })
-                );
+    public Mono<Void> deposit(DepositRequest request) {
+        return repository.getAccountById(request.getCuentaId())
+                .flatMap(account -> {
+                    if (!account.getMiembrosUid().contains(request.getUsuarioUid())) {
+                        return Mono.error(new CustomException(HttpStatus.FORBIDDEN, "Usuario no pertenece a la cuenta"));
+                    }
+                    account.setSaldo(account.getSaldo() + request.getMonto());
+                    return repository.actualizarCuenta(account)
+                            .then(notificationService.notifyDeposit(
+                                    request.getCuentaId(),
+                                    request.getUsuarioUid(),
+                                    request.getMonto()
+                            ));
+                });
     }
+
+    @Override
+    public Mono<Void> withdraw(WithdrawRequest request) {
+        return repository.getAccountById(request.getCuentaId())
+                .flatMap(account -> {
+                    if (!account.getMiembrosUid().contains(request.getUsuarioUid())) {
+                        return Mono.error(new CustomException(HttpStatus.FORBIDDEN, "Usuario no pertenece a la cuenta"));
+                    }
+                    if (account.getSaldo() < request.getMonto()) {
+                        return Mono.error(new CustomException(HttpStatus.BAD_REQUEST, "Saldo insuficiente"));
+                    }
+                    account.setSaldo(account.getSaldo() - request.getMonto());
+                    return repository.actualizarCuenta(account)
+                            .then(notificationService.notifyWithdrawal(
+                                    request.getCuentaId(),
+                                    request.getUsuarioUid(),
+                                    request.getMonto()
+                            ));
+                });
+    }
+
+    @Override
+    public Mono<Void> invest(InvestmentRequest request) {
+        return repository.getAccountById(request.getCuentaId())
+                .flatMap(account -> {
+                    if (!account.getMiembrosUid().contains(request.getUsuarioUid())) {
+                        return Mono.error(new CustomException(HttpStatus.FORBIDDEN, "Usuario no pertenece a la cuenta"));
+                    }
+                    if (account.getSaldo() < request.getMonto()) {
+                        return Mono.error(new CustomException(HttpStatus.BAD_REQUEST, "Saldo insuficiente"));
+                    }
+                    account.setSaldo(account.getSaldo() - request.getMonto());
+                    return repository.actualizarCuenta(account);
+                });
+    }
+
+    @Override
+    public Mono<Void> transfer(TransferRequest request) {
+        return repository.getAccountById(request.getCuentaOrigenId())
+                .flatMap(origen -> {
+                    if (!origen.getMiembrosUid().contains(request.getUsuarioUid())) {
+                        return Mono.error(new CustomException(HttpStatus.FORBIDDEN, "Usuario no pertenece a la cuenta de origen"));
+                    }
+                    if (origen.getSaldo() < request.getMonto()) {
+                        return Mono.error(new CustomException(HttpStatus.BAD_REQUEST, "Saldo insuficiente en cuenta de origen"));
+                    }
+                    return repository.getAccountById(request.getCuentaDestinoId())
+                            .flatMap(destino -> {
+                                origen.setSaldo(origen.getSaldo() - request.getMonto());
+                                destino.setSaldo(destino.getSaldo() + request.getMonto());
+
+                                return Mono.when(
+                                        repository.actualizarCuenta(origen),
+                                        repository.actualizarCuenta(destino),
+                                        notificationService.notifyTransfer(
+                                                request.getCuentaOrigenId(),
+                                                request.getCuentaDestinoId(),
+                                                request.getUsuarioUid(),
+                                                request.getMonto()
+                                        )
+                                );
+                            });
+                });
+    }
+
 }

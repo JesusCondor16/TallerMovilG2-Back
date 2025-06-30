@@ -2,7 +2,7 @@ package com.pe.fisi.sw.cooperApp.notifications.mapper;
 
 import com.google.cloud.Timestamp;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
-import com.pe.fisi.sw.cooperApp.notifications.dto.NotificationEvent;
+import com.pe.fisi.sw.cooperApp.notifications.model.NotificationEvent;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;

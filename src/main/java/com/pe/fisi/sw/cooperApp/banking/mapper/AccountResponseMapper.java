@@ -1,11 +1,11 @@
 package com.pe.fisi.sw.cooperApp.banking.mapper;
 
-import com.pe.fisi.sw.cooperApp.banking.dto.Account;
+import com.pe.fisi.sw.cooperApp.banking.model.Account;
 import com.pe.fisi.sw.cooperApp.banking.dto.AccountResponse;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AccountMapper {
+public class AccountResponseMapper {
     public AccountResponse toResponse(Account cuenta) {
         return AccountResponse.builder()
                 .nombreCuenta(cuenta.getNombreCuenta())

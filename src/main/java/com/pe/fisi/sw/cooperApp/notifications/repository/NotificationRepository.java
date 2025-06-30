@@ -1,9 +1,7 @@
 package com.pe.fisi.sw.cooperApp.notifications.repository;
 
-import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
-import com.pe.fisi.sw.cooperApp.banking.dto.Account;
-import com.pe.fisi.sw.cooperApp.notifications.dto.NotificationEvent;
+import com.pe.fisi.sw.cooperApp.notifications.model.NotificationEvent;
 import com.pe.fisi.sw.cooperApp.notifications.mapper.NotificationMapper;
 import com.pe.fisi.sw.cooperApp.security.exceptions.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +14,6 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Repository

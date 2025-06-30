@@ -1,4 +1,4 @@
-package com.pe.fisi.sw.cooperApp.users.dto;
+package com.pe.fisi.sw.cooperApp.users.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

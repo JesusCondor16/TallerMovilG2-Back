@@ -1,11 +1,13 @@
 package com.pe.fisi.sw.cooperApp.notifications.service;
 
 import com.pe.fisi.sw.cooperApp.banking.repository.AccountRepository;
-import com.pe.fisi.sw.cooperApp.notifications.dto.NotificationEvent;
+import com.pe.fisi.sw.cooperApp.notifications.codec.AccessCodeDecoder;
+import com.pe.fisi.sw.cooperApp.notifications.codec.DecodedAccessCode;
+import com.pe.fisi.sw.cooperApp.notifications.model.NotificationEvent;
+import com.pe.fisi.sw.cooperApp.notifications.model.NotificationFactory;
 import com.pe.fisi.sw.cooperApp.notifications.repository.NotificationRepository;
 import com.pe.fisi.sw.cooperApp.security.exceptions.CustomException;
 import com.pe.fisi.sw.cooperApp.security.service.FirebaseAuthService;
-import com.pe.fisi.sw.cooperApp.users.dto.AccountUserDto;
 import com.pe.fisi.sw.cooperApp.users.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,10 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.util.Base64;
 
 @RequiredArgsConstructor
 @Service
@@ -27,7 +25,8 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
-
+    private final NotificationFactory notificationFactory;
+    private final AccessCodeDecoder accessCodeDecoder;
     @Override
     public Mono<Void> inviteUserToAccount(String email, String accountId, String inviterId) {
         log.info(accountId);
@@ -43,17 +42,12 @@ public class NotificationServiceImpl implements NotificationService {
                     ).flatMap(data -> {
                         String nombreInvitador = data.getT1();
                         String nombreCuenta = data.getT2();
+                        String mensaje = "Has sido invitado a unirte a la cuenta " + nombreCuenta +
+                                " por el usuario " + nombreInvitador;
 
-                        NotificationEvent event = NotificationEvent.builder()
-                                .idUsuario(invitedUserId)
-                                .mensaje("Has sido invitado a unirte a la cuenta " + nombreCuenta +
-                                        " por el usuario " + nombreInvitador)
-                                .tipo("INVITACION_ACCESO_CUENTA")
-                                .idCuenta(accountId)
-                                .idSolcitante(inviterId)
-                                .estado("pending")
-                                .fechaCreacion(Instant.now())
-                                .build();
+                        NotificationEvent event = notificationFactory.createAccountInvitation(
+                                accountId, invitedUserId, inviterId, mensaje
+                        );
 
                         return notificationRepository.saveNotification(event);
                     });
@@ -67,33 +61,18 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public Mono<Void> requestAccess(String base64Code, String requesterUid) {
-        String decoded;
+        DecodedAccessCode decoded;
         try {
-            decoded = new String(Base64.getDecoder().decode(base64Code), StandardCharsets.UTF_8);
-        } catch (IllegalArgumentException e) {
-            return Mono.error(new CustomException(HttpStatus.BAD_REQUEST, "Código inválido"));
+            decoded = accessCodeDecoder.decode(base64Code);
+        } catch (CustomException e) {
+            return Mono.error(e);
         }
 
-        String[] parts = decoded.split(":");
-        if (parts.length != 3) {
-            return Mono.error(new CustomException(HttpStatus.BAD_REQUEST, "Formato del código incorrecto"));
-        }
-
-        String cuentaId = parts[0];
-        long expiration;
-        String ownerEmail = parts[2];
-
-        try {
-            expiration = Long.parseLong(parts[1]);
-        } catch (NumberFormatException e) {
-            return Mono.error(new CustomException(HttpStatus.BAD_REQUEST, "Timestamp inválido"));
-        }
-
-        if (System.currentTimeMillis() > expiration) {
+        if (System.currentTimeMillis() > decoded.expiration()) {
             return Mono.error(new CustomException(HttpStatus.GONE, "El código ha expirado"));
         }
 
-        return firebaseAuthService.getUidByEmail(ownerEmail)
+        return firebaseAuthService.getUidByEmail(decoded.ownerEmail())
                 .switchIfEmpty(Mono.error(new CustomException(HttpStatus.NOT_FOUND, "Usuario no encontrado")))
                 .zipWith(firebaseAuthService.getEmailByUid(requesterUid))
                 .flatMap(tuple -> {
@@ -102,20 +81,16 @@ public class NotificationServiceImpl implements NotificationService {
 
                     return Mono.zip(
                             userRepository.getNombreCompleto(requesterEmail),
-                            accountRepository.getNombreCuenta(cuentaId)
+                            accountRepository.getNombreCuenta(decoded.cuentaId())
                     ).flatMap(data -> {
                         String nombreSolicitante = data.getT1();
                         String nombreCuenta = data.getT2();
 
-                        NotificationEvent event = NotificationEvent.builder()
-                                .idUsuario(ownerUid)
-                                .idSolcitante(requesterUid)
-                                .idCuenta(cuentaId)
-                                .estado("pending")
-                                .tipo("SOLICITUD_ACCESO_CUENTA")
-                                .fechaCreacion(Instant.now())
-                                .mensaje("El usuario " + nombreSolicitante + " solicita acceso a la cuenta " + nombreCuenta)
-                                .build();
+                        String mensaje = "El usuario " + nombreSolicitante + " solicita acceso a la cuenta " + nombreCuenta;
+
+                        NotificationEvent event = notificationFactory.createAccessRequest(
+                                decoded.cuentaId(), requesterUid, ownerUid, mensaje
+                        );
 
                         return notificationRepository.saveNotification(event);
                     });
@@ -148,4 +123,52 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationRepository.updateNotificationStatus(idNotificacion, "rechazada")
                 .thenReturn("Solicitud de membresía rechazada correctamente.");
     }
+
+    @Override
+    public Mono<NotificationEvent> notifyAccountReport(String cuentaId, String reporterId, String ownerUid, String motivo, String urlsConcatenadas) {
+        String mensaje = "Motivo del reporte: " + motivo + "\nArchivos adjuntos:\n" + urlsConcatenadas;
+
+        NotificationEvent notification = notificationFactory.createAccountReport(
+                cuentaId, reporterId, ownerUid, mensaje
+        );
+
+        return notificationRepository.saveNotification(notification).thenReturn(notification);
+    }
+
+    @Override
+    public Mono<Void> notifyDeposit(String cuentaId, String usuarioUid, float monto) {
+        String mensaje = "Se realizó un depósito de S/ " + monto + " en la cuenta.";
+        NotificationEvent notification = notificationFactory.createDepositNotification(
+                cuentaId, usuarioUid, monto, mensaje
+        );
+        return notificationRepository.saveNotification(notification);
+    }
+
+    @Override
+    public Mono<Void> notifyWithdrawal(String cuentaId, String usuarioUid, float monto) {
+        String mensaje = "Se realizó un retiro de S/ " + monto + " de la cuenta.";
+        NotificationEvent notification = notificationFactory.createWithdrawNotification(
+                cuentaId, usuarioUid, monto, mensaje
+        );
+        return notificationRepository.saveNotification(notification);
+    }
+
+    @Override
+    public Mono<Void> notifyTransfer(String cuentaOrigenId, String cuentaDestinoId, String usuarioUid, float monto) {
+        String mensajeOrigen = "Se transfirió S/ " + monto + " desde esta cuenta hacia la cuenta " + cuentaDestinoId;
+        String mensajeDestino = "Se recibió una transferencia de S/ " + monto + " desde la cuenta " + cuentaOrigenId;
+
+        NotificationEvent notificacionOrigen = notificationFactory.createTransferNotification(
+                cuentaOrigenId, usuarioUid, monto, mensajeOrigen
+        );
+        NotificationEvent notificacionDestino = notificationFactory.createTransferNotification(
+                cuentaDestinoId, usuarioUid, monto, mensajeDestino
+        );
+
+        return Mono.when(
+                notificationRepository.saveNotification(notificacionOrigen),
+                notificationRepository.saveNotification(notificacionDestino)
+        );
+    }
+
 }

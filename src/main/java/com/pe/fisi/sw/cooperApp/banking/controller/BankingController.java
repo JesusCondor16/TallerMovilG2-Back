@@ -1,10 +1,9 @@
 package com.pe.fisi.sw.cooperApp.banking.controller;
 
-import com.pe.fisi.sw.cooperApp.banking.dto.AccountResponse;
-import com.pe.fisi.sw.cooperApp.banking.dto.CreateAccountRequest;
-import com.pe.fisi.sw.cooperApp.banking.dto.ReportRequest;
+import com.pe.fisi.sw.cooperApp.banking.dto.*;
+import com.pe.fisi.sw.cooperApp.banking.service.AccountReportService;
 import com.pe.fisi.sw.cooperApp.banking.service.AccountService;
-import com.pe.fisi.sw.cooperApp.notifications.dto.NotificationEvent;
+import com.pe.fisi.sw.cooperApp.notifications.model.NotificationEvent;
 import com.pe.fisi.sw.cooperApp.security.exceptions.CustomException;
 import com.pe.fisi.sw.cooperApp.security.validator.CustomValidator;
 import com.pe.fisi.sw.cooperApp.security.validator.FileValidator;
@@ -15,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -28,6 +26,7 @@ public class BankingController {
     private final AccountService accountService;
     private final CustomValidator validator;
     private final FileValidator fileValidator;
+    private final AccountReportService accountReportService;
     @PostMapping("/create")
     public Mono<ResponseEntity<AccountResponse>> createAccount(@RequestBody CreateAccountRequest request) {
         validator.validate(request);
@@ -67,7 +66,27 @@ public class BankingController {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Solo se permiten hasta 3 archivos.");
         }
         fileValidator.validateFiles(files);
-        return accountService.reportAccount(request, files)
+        return accountReportService.reportAccount(request, files)
                 .map(ResponseEntity::ok);
+    }
+    @PostMapping("/deposit")
+    public Mono<ResponseEntity<Void>> deposit(@RequestBody DepositRequest request) {
+        return accountService.deposit(request).thenReturn(ResponseEntity.ok().build());
+    }
+
+    @PostMapping("/withdraw")
+    public Mono<ResponseEntity<Void>> withdraw(@RequestBody WithdrawRequest request) {
+        return accountService.withdraw(request).thenReturn(ResponseEntity.ok().build());
+    }
+
+    @PostMapping("/invest")
+    public Mono<ResponseEntity<Void>> invest(@RequestBody InvestmentRequest request) {
+        return accountService.invest(request).thenReturn(ResponseEntity.ok().build());
+    }
+
+    @PostMapping("/transfer")
+    public Mono<ResponseEntity<Void>> transfer(@RequestBody TransferRequest request) {
+        return accountService.transfer(request)
+                .thenReturn(ResponseEntity.ok().build());
     }
 }
