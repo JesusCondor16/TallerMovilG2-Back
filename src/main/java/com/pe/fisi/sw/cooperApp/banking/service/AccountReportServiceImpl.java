@@ -1,6 +1,5 @@
 package com.pe.fisi.sw.cooperApp.banking.service;
 
-import com.google.cloud.firestore.Firestore;
 import com.pe.fisi.sw.cooperApp.banking.dto.ReportRequest;
 import com.pe.fisi.sw.cooperApp.banking.repository.AccountRepository;
 import com.pe.fisi.sw.cooperApp.files.service.FileUploader;
@@ -22,7 +21,6 @@ import java.util.List;
 public class AccountReportServiceImpl implements AccountReportService {
     private final AccountRepository repository;
     private final FileUploader uploader;
-    private final Firestore firestore;
     private final NotificationService notificationService;
     @Override
     public Mono<NotificationEvent> reportAccount(ReportRequest request, List<FilePart> files) {
