@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 public class AccountResponseMapper {
     public AccountResponse toResponse(Account cuenta) {
         return AccountResponse.builder()
+                .cuentaId(cuenta.getCuentaId())
                 .nombreCuenta(cuenta.getNombreCuenta())
                 .tipo(cuenta.getTipo())
                 .estado(cuenta.getEstado())

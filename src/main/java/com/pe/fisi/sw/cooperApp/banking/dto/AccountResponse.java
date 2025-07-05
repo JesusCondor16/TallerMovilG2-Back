@@ -8,6 +8,7 @@ import java.time.Instant;
 @Data
 @Builder
 public class AccountResponse {
+    private String cuentaId;
     private String nombreCuenta;
     private String tipo;
     private String estado;
