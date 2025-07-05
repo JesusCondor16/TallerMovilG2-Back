@@ -7,6 +7,7 @@ import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +17,7 @@ import java.util.Collections;
 public class GoogleDriveConfig {
 
     private static final String APPLICATION_NAME = "cooperApp";
-    private static final String CREDENTIALS_FILE = "/etc/secrets/google-drive.json";
+    private static final String CREDENTIALS_FILE = "google-drive.json";
     // Scope actualizado para incluir permisos
     private static final String DRIVE_SCOPE = "https://www.googleapis.com/auth/drive";
 
@@ -24,7 +25,13 @@ public class GoogleDriveConfig {
     public GoogleCredentials googleCredentials() throws IOException {
         try {
             // Primero intentar desde el classpath
-            InputStream credentialsStream = new java.io.FileInputStream(CREDENTIALS_FILE);
+            InputStream credentialsStream = getClass().getClassLoader()
+                    .getResourceAsStream(CREDENTIALS_FILE);
+
+            if (credentialsStream == null) {
+                // Si no está en classpath, intentar desde el directorio raíz
+                credentialsStream = new ClassPathResource("../" + CREDENTIALS_FILE).getInputStream();
+            }
 
             GoogleCredentials credentials;
             try (InputStream stream = credentialsStream) {
