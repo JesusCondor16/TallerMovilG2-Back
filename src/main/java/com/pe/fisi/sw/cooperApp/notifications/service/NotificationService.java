@@ -7,7 +7,7 @@ import reactor.core.publisher.Mono;
 public interface NotificationService {
     Mono<Void> requestAccess(String base64Code, String requesterUid);
     Mono<Void> inviteUserToAccount(String email, String accountId, String inviterId);
-    Flux<NotificationEvent> getNotifications(String cuentaId);
+    Flux<NotificationEvent> getNotifications(String idUsuario);
 
     Mono<String> acceptMember(String idNotificacion);
 

@@ -46,7 +46,7 @@ public class NotificationRepository {
                         CompletableFuture.supplyAsync(() -> {
                             try {
                                 return firestore.collection(NOTIFICATIONS)
-                                        .whereEqualTo("idCuenta", accountId)
+                                        .whereEqualTo("idUsuario", accountId)
                                         .get().get().getDocuments();
                             } catch (Exception e) {
                                 throw new CustomException(HttpStatus.BAD_REQUEST, "Error al obtener las notificaciones: " + e.getMessage());

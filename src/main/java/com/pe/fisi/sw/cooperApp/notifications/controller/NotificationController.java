@@ -16,9 +16,9 @@ public class NotificationController {
     private final NotificationService notificationService;
     @GetMapping("/get-all")
     public ResponseEntity<Flux<NotificationEvent>> getNotificaciones(
-            @RequestParam String cuentaId
+            @RequestParam String idUsuario
     ) {
-        Flux<NotificationEvent> notifications = notificationService.getNotifications(cuentaId);
+        Flux<NotificationEvent> notifications = notificationService.getNotifications(idUsuario);
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)

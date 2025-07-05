@@ -55,8 +55,8 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public Flux<NotificationEvent> getNotifications(String accountId) {
-        return notificationRepository.getNotifications(accountId);
+    public Flux<NotificationEvent> getNotifications(String idUsuario) {
+        return notificationRepository.getNotifications(idUsuario);
     }
 
     @Override
