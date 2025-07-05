@@ -22,7 +22,7 @@ public class FirebaseConfig {
     @PostConstruct
     public void initialize() {
         try {
-            InputStream serviceAccount = getClass().getResourceAsStream("/cooperauthapp-firebase-admin.json");
+            InputStream serviceAccount = new java.io.FileInputStream("/etc/secrets/cooperauthapp-firebase-admin.json");
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
