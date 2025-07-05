@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 public class IAService {
 
     private final WebClient webClient = WebClient.builder()
-            .baseUrl("http://localhost:8000")
+            .baseUrl("https://deploy-iaservice-ccdbaf24365b.herokuapp.com")
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .build();
 
