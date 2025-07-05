@@ -1,0 +1,658 @@
+{
+	"info": {
+		"_postman_id": "c68c7558-22b4-46eb-a30a-179cf0347f10",
+		"name": "CooperApp",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27793360",
+		"_collection_link": "https://cooperapp.postman.co/workspace/CooperApp-Workspace~6b2624ef-7bf7-4a7a-850b-741d6b94b030/collection/27793360-c68c7558-22b4-46eb-a30a-179cf0347f10?action=share&source=collection_link&creator=27793360"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"joaquinhidalgo98@gmail.com\",\r\n  \"password\": \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/auth/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nombre\": \"Joaquin\",\r\n  \"apellido\": \"Hidalgo\",\r\n  \"email\": \"joaquinhidalgo98@gmail.com\",\r\n  \"password\": \"123\",\r\n  \"telefono\": \"932769482\",\r\n  \"fechaNacimiento\": \"1998-09-19\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/auth/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reiniciar Contraseña",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"joaquinhidalgo98@gmail.com\" \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/auth/reset-password/request",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"auth",
+								"reset-password",
+								"request"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirmar Reiniciar Contraseña",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"joaquinhidalgo98@gmail.com\",\r\n    \"code\": \"19429b\",\r\n    \"newPassword\": \"111111\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/auth/reset-password/confirm",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"auth",
+								"reset-password",
+								"confirm"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Banking",
+			"item": [
+				{
+					"name": "Crear cuenta",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjZlODk1YzQ3YTA0YzVmNmRlMzExMmFmZjE2ODFhMzUwNzdkMWNjZDQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY29vcGVyYXV0aGFwcCIsImF1ZCI6ImNvb3BlcmF1dGhhcHAiLCJhdXRoX3RpbWUiOjE3NDkwODQ4OTYsInVzZXJfaWQiOiIzRXpqcDdHakFEU0t0T0FrYWJHcjFQdmNQU00yIiwic3ViIjoiM0V6anA3R2pBRFNLdE9Ba2FiR3IxUHZjUFNNMiIsImlhdCI6MTc0OTA4NDg5NiwiZXhwIjoxNzQ5MDg4NDk2LCJlbWFpbCI6ImpvYXF1aW5oaWRhbGdvOThAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbImpvYXF1aW5oaWRhbGdvOThAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.A1Hw9fVjaSfLNLwmlHpWyo5vP0ott1mDzHz1QkXBoyUf6EYtUxWzm7SrnHf4-3DYrvQmgMn6-3SKV4f44ZTjhHXpqmFFP0lJDpDWYV0CigwbWpVHf9p_dzlzTWehSmlBinNDuugvDJGWHw5SlRec2yePyrzclNDRiAFExi2fOuUBKzUylAWbg3c0ngbE_sDU2ssEq8l1ZmM1DvahXp0uOKlv6Yylxc6RhHWfF1Urf77NGtVnGIOYw2Q5CIRJFHKezOGrYGjtYQw_yZHzBZ3M3Pc0Lrg_XwBerHRSf-Lwlq14rNpUw2pqDd42_vNPTqfIEzLLHpQCe7MsfaW15hiloA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nombre\": \"Viajes de promocion\",\r\n  \"tipo\": \"Ahorro\",\r\n  \"moneda\": \"PEN\",\r\n  \"saldo\": 1500.00,\r\n  \"descripcion\": \"Viaje de promocion a Ica\",\r\n  \"creadorUid\": \"gwL9Yki2AKNWsZtcmEaqKEYFfjj1\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/accounts/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"accounts",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Miembros de una Cuenta",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "pingapingapingapinga",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8222/v1/accounts/members/yyBBU4bQveaSjmLdTQin",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8222",
+							"path": [
+								"v1",
+								"accounts",
+								"members",
+								"yyBBU4bQveaSjmLdTQin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generar Código para unirse  a cuenta",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjZlODk1YzQ3YTA0YzVmNmRlMzExMmFmZjE2ODFhMzUwNzdkMWNjZDQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY29vcGVyYXV0aGFwcCIsImF1ZCI6ImNvb3BlcmF1dGhhcHAiLCJhdXRoX3RpbWUiOjE3NDkwODQ4OTYsInVzZXJfaWQiOiIzRXpqcDdHakFEU0t0T0FrYWJHcjFQdmNQU00yIiwic3ViIjoiM0V6anA3R2pBRFNLdE9Ba2FiR3IxUHZjUFNNMiIsImlhdCI6MTc0OTA4NDg5NiwiZXhwIjoxNzQ5MDg4NDk2LCJlbWFpbCI6ImpvYXF1aW5oaWRhbGdvOThAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbImpvYXF1aW5oaWRhbGdvOThAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.A1Hw9fVjaSfLNLwmlHpWyo5vP0ott1mDzHz1QkXBoyUf6EYtUxWzm7SrnHf4-3DYrvQmgMn6-3SKV4f44ZTjhHXpqmFFP0lJDpDWYV0CigwbWpVHf9p_dzlzTWehSmlBinNDuugvDJGWHw5SlRec2yePyrzclNDRiAFExi2fOuUBKzUylAWbg3c0ngbE_sDU2ssEq8l1ZmM1DvahXp0uOKlv6Yylxc6RhHWfF1Urf77NGtVnGIOYw2Q5CIRJFHKezOGrYGjtYQw_yZHzBZ3M3Pc0Lrg_XwBerHRSf-Lwlq14rNpUw2pqDd42_vNPTqfIEzLLHpQCe7MsfaW15hiloA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/v1/accounts/generate-code?cuentaId=7emQuEePlfxOhuHNQ8uj",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"accounts",
+								"generate-code"
+							],
+							"query": [
+								{
+									"key": "cuentaId",
+									"value": "7emQuEePlfxOhuHNQ8uj"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener todas las cuentas (donde es dueño)",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjZlODk1YzQ3YTA0YzVmNmRlMzExMmFmZjE2ODFhMzUwNzdkMWNjZDQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY29vcGVyYXV0aGFwcCIsImF1ZCI6ImNvb3BlcmF1dGhhcHAiLCJhdXRoX3RpbWUiOjE3NDg3MDA0MTQsInVzZXJfaWQiOiIzRXpqcDdHakFEU0t0T0FrYWJHcjFQdmNQU00yIiwic3ViIjoiM0V6anA3R2pBRFNLdE9Ba2FiR3IxUHZjUFNNMiIsImlhdCI6MTc0ODcwMDQxNCwiZXhwIjoxNzQ4NzA0MDE0LCJlbWFpbCI6ImpvYXF1aW5oaWRhbGdvOThAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbImpvYXF1aW5oaWRhbGdvOThAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.RdS6ANzgYTPnhO8hQKM9Moc6Qr1W4r4gx_qHV89Rzw0tX5mEK6DnC7wTayY_sGI6X3YcEtSiSUefbGr88SnzXIzG2SyGd2e86b4mcgy_ccHrhgeTGZrhLEYCSvxMw0ptI-xcC8vXEBkntIHNfUuxZVKcjcMb-ToD9_s0C6zdojck-drmBFm197PkNcIFz_lnE3wDz_hwlxYWJsqHJY4sIla5biZiQQFjSEHNHBD8JN09YV34vEN3RLDFOWI0yB_ULy3MPgVUgHcvmHUy1BcBkc9GWGTEdKWlyCmGK7OMN_kcqXKOXMuvlx9GiDuZZT47Wefb2yiq5UglBXZHhkB-XQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:8222/v1/accounts/get-accounts/3153A02DGRcLBN8eDiRQcG4HHzv2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8222",
+							"path": [
+								"v1",
+								"accounts",
+								"get-accounts",
+								"3153A02DGRcLBN8eDiRQcG4HHzv2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener todas las cuentas (donde uno es miembro)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjZlODk1YzQ3YTA0YzVmNmRlMzExMmFmZjE2ODFhMzUwNzdkMWNjZDQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY29vcGVyYXV0aGFwcCIsImF1ZCI6ImNvb3BlcmF1dGhhcHAiLCJhdXRoX3RpbWUiOjE3NDg5MTU3MDQsInVzZXJfaWQiOiIzRXpqcDdHakFEU0t0T0FrYWJHcjFQdmNQU00yIiwic3ViIjoiM0V6anA3R2pBRFNLdE9Ba2FiR3IxUHZjUFNNMiIsImlhdCI6MTc0ODkxNTcwNCwiZXhwIjoxNzQ4OTE5MzA0LCJlbWFpbCI6ImpvYXF1aW5oaWRhbGdvOThAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbImpvYXF1aW5oaWRhbGdvOThAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.hnRmqcLVyjPUUMpT48FDMdsdHq1LTfKfAMRmnW21PemzXUP9SdWJoYbHWncTCe_qnrDmOt9s0_vo987eWuBu1yJV1eKWQt1s4pqlzcUe0ah3_mlrrNx1PHfS9-XGyPpoMx0uBqe8GM7IMY1OlrDbjq1jil25Rn1H5RrTlYn5CSm-5O3qaLzZMcxO3ThwBr2ZxjN3VEBLYXRiiV92U6Iz6bbeSXwhIrjl4JEp0p1kpT3o3pJV8_7SmbSkINYCwvi86d1crANlVURnAvpbmQgrUc0mUXtVsjJryackJmno3PqKrIZ6lA_uOKs-ZR39YAcfg1j5Db5toOcAmqBvKJMTjA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/v1/accounts/get-member/3153A02DGRcLBN8eDiRQcG4HHzv2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"accounts",
+								"get-member",
+								"3153A02DGRcLBN8eDiRQcG4HHzv2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener cuenta por id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjZlODk1YzQ3YTA0YzVmNmRlMzExMmFmZjE2ODFhMzUwNzdkMWNjZDQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY29vcGVyYXV0aGFwcCIsImF1ZCI6ImNvb3BlcmF1dGhhcHAiLCJhdXRoX3RpbWUiOjE3NDg5MTU3MDQsInVzZXJfaWQiOiIzRXpqcDdHakFEU0t0T0FrYWJHcjFQdmNQU00yIiwic3ViIjoiM0V6anA3R2pBRFNLdE9Ba2FiR3IxUHZjUFNNMiIsImlhdCI6MTc0ODkxNTcwNCwiZXhwIjoxNzQ4OTE5MzA0LCJlbWFpbCI6ImpvYXF1aW5oaWRhbGdvOThAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbImpvYXF1aW5oaWRhbGdvOThAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.hnRmqcLVyjPUUMpT48FDMdsdHq1LTfKfAMRmnW21PemzXUP9SdWJoYbHWncTCe_qnrDmOt9s0_vo987eWuBu1yJV1eKWQt1s4pqlzcUe0ah3_mlrrNx1PHfS9-XGyPpoMx0uBqe8GM7IMY1OlrDbjq1jil25Rn1H5RrTlYn5CSm-5O3qaLzZMcxO3ThwBr2ZxjN3VEBLYXRiiV92U6Iz6bbeSXwhIrjl4JEp0p1kpT3o3pJV8_7SmbSkINYCwvi86d1crANlVURnAvpbmQgrUc0mUXtVsjJryackJmno3PqKrIZ6lA_uOKs-ZR39YAcfg1j5Db5toOcAmqBvKJMTjA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/v1/accounts/get-account/yyBBU4bQveaSjmLdTQin",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"accounts",
+								"get-account",
+								"yyBBU4bQveaSjmLdTQin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reportar Cuenta",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImE0YTEwZGVjZTk4MzY2ZDZmNjNlMTY3Mjg2YWU5YjYxMWQyYmFhMjciLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY29vcGVyYXV0aGFwcCIsImF1ZCI6ImNvb3BlcmF1dGhhcHAiLCJhdXRoX3RpbWUiOjE3NDkzMzU2NzIsInVzZXJfaWQiOiIzRXpqcDdHakFEU0t0T0FrYWJHcjFQdmNQU00yIiwic3ViIjoiM0V6anA3R2pBRFNLdE9Ba2FiR3IxUHZjUFNNMiIsImlhdCI6MTc0OTMzNTY3MiwiZXhwIjoxNzQ5MzM5MjcyLCJlbWFpbCI6ImpvYXF1aW5oaWRhbGdvOThAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbImpvYXF1aW5oaWRhbGdvOThAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.LvzW9kXGXhaPso-LHkzw8BVpfoTxGjaq9V7Zt98fsbe5I2ccqT2fP3YvvCHzkbFZYPIn0XY782ERJ0Ys1LXvXJZPgkD61O4krt8G_MwxxIIzj6JxmBEWOPigh9UXpK5gI7aBQA1tq06sykolG0bw82H9DmoVQkyz1vDrUlD758Yk24yUp5X_Sic5vT3pMPPvv3_GCDK1gWpJZR8YyL7vqn50cJPBf57sZ_ke73kZ44Re2CtCDcf5eZGgR0bkMaxdmTRgpBg4zAS2g9TSp9v87HjuBDrEIS-lvLwTLj1qdioN7WJN17XJdThQAbt3OApDaDo4Ud7ZbaRBVsvusj-CTw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "multipart/form-data",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "data",
+									"value": "{\"cuentaUid\":\"7emQuEePlfxOhuHNQ8uj\", \"reporterId\":\"3Ezjp7GjADSKtOAkabGr1PvcPSM2\", \"motivo\":\"Sospecha de uso indebido de la cuenta.\"}",
+									"contentType": "application/json",
+									"type": "text"
+								},
+								{
+									"key": "files",
+									"contentType": "",
+									"type": "file",
+									"src": "/C:/Users/USER/Downloads/fc6bfeca-bc84-4986-ba57-d5b312ae329c.jpg"
+								},
+								{
+									"key": "files",
+									"type": "file",
+									"src": "/C:/Users/USER/Downloads/WhatsApp Image 2025-06-07 at 9.38.34 AM.jpeg"
+								},
+								{
+									"key": "files",
+									"type": "file",
+									"src": "/C:/Users/USER/Downloads/Doc1.pdf"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/accounts/report",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"accounts",
+								"report"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Notificaciones",
+			"item": [
+				{
+					"name": "Invitar Miembro",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjZlODk1YzQ3YTA0YzVmNmRlMzExMmFmZjE2ODFhMzUwNzdkMWNjZDQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY29vcGVyYXV0aGFwcCIsImF1ZCI6ImNvb3BlcmF1dGhhcHAiLCJhdXRoX3RpbWUiOjE3NDkwODQ4OTYsInVzZXJfaWQiOiIzRXpqcDdHakFEU0t0T0FrYWJHcjFQdmNQU00yIiwic3ViIjoiM0V6anA3R2pBRFNLdE9Ba2FiR3IxUHZjUFNNMiIsImlhdCI6MTc0OTA4NDg5NiwiZXhwIjoxNzQ5MDg4NDk2LCJlbWFpbCI6ImpvYXF1aW5oaWRhbGdvOThAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbImpvYXF1aW5oaWRhbGdvOThAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.A1Hw9fVjaSfLNLwmlHpWyo5vP0ott1mDzHz1QkXBoyUf6EYtUxWzm7SrnHf4-3DYrvQmgMn6-3SKV4f44ZTjhHXpqmFFP0lJDpDWYV0CigwbWpVHf9p_dzlzTWehSmlBinNDuugvDJGWHw5SlRec2yePyrzclNDRiAFExi2fOuUBKzUylAWbg3c0ngbE_sDU2ssEq8l1ZmM1DvahXp0uOKlv6Yylxc6RhHWfF1Urf77NGtVnGIOYw2Q5CIRJFHKezOGrYGjtYQw_yZHzBZ3M3Pc0Lrg_XwBerHRSf-Lwlq14rNpUw2pqDd42_vNPTqfIEzLLHpQCe7MsfaW15hiloA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/v1/notifications/invite-member?email=joaquinhidalgo98@gmail.com&cuentaId=XD2yXQUamQAFEtK7kWhY&inviterUid=gwL9Yki2AKNWsZtcmEaqKEYFfjj1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"notifications",
+								"invite-member"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "joaquinhidalgo98@gmail.com"
+								},
+								{
+									"key": "cuentaId",
+									"value": "XD2yXQUamQAFEtK7kWhY"
+								},
+								{
+									"key": "inviterUid",
+									"value": "gwL9Yki2AKNWsZtcmEaqKEYFfjj1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unirse a cuenta mediante Código de cuenta",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjZlODk1YzQ3YTA0YzVmNmRlMzExMmFmZjE2ODFhMzUwNzdkMWNjZDQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY29vcGVyYXV0aGFwcCIsImF1ZCI6ImNvb3BlcmF1dGhhcHAiLCJhdXRoX3RpbWUiOjE3NDkwODQ4OTYsInVzZXJfaWQiOiIzRXpqcDdHakFEU0t0T0FrYWJHcjFQdmNQU00yIiwic3ViIjoiM0V6anA3R2pBRFNLdE9Ba2FiR3IxUHZjUFNNMiIsImlhdCI6MTc0OTA4NDg5NiwiZXhwIjoxNzQ5MDg4NDk2LCJlbWFpbCI6ImpvYXF1aW5oaWRhbGdvOThAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbImpvYXF1aW5oaWRhbGdvOThAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.A1Hw9fVjaSfLNLwmlHpWyo5vP0ott1mDzHz1QkXBoyUf6EYtUxWzm7SrnHf4-3DYrvQmgMn6-3SKV4f44ZTjhHXpqmFFP0lJDpDWYV0CigwbWpVHf9p_dzlzTWehSmlBinNDuugvDJGWHw5SlRec2yePyrzclNDRiAFExi2fOuUBKzUylAWbg3c0ngbE_sDU2ssEq8l1ZmM1DvahXp0uOKlv6Yylxc6RhHWfF1Urf77NGtVnGIOYw2Q5CIRJFHKezOGrYGjtYQw_yZHzBZ3M3Pc0Lrg_XwBerHRSf-Lwlq14rNpUw2pqDd42_vNPTqfIEzLLHpQCe7MsfaW15hiloA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/v1/notifications/request-access?code=N2VtUXVFZVBsZnhPaHVITlE4dWo6MTc0OTA4ODgwNzIzNzpqZXN1c2NvbmRvckBlamVtcGxvLmNvbQ==&requesterUid=3Ezjp7GjADSKtOAkabGr1PvcPSM2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"notifications",
+								"request-access"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "N2VtUXVFZVBsZnhPaHVITlE4dWo6MTc0OTA4ODgwNzIzNzpqZXN1c2NvbmRvckBlamVtcGxvLmNvbQ=="
+								},
+								{
+									"key": "requesterUid",
+									"value": "3Ezjp7GjADSKtOAkabGr1PvcPSM2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener todas las notificaciones",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjZlODk1YzQ3YTA0YzVmNmRlMzExMmFmZjE2ODFhMzUwNzdkMWNjZDQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY29vcGVyYXV0aGFwcCIsImF1ZCI6ImNvb3BlcmF1dGhhcHAiLCJhdXRoX3RpbWUiOjE3NDg5MTU3MDQsInVzZXJfaWQiOiIzRXpqcDdHakFEU0t0T0FrYWJHcjFQdmNQU00yIiwic3ViIjoiM0V6anA3R2pBRFNLdE9Ba2FiR3IxUHZjUFNNMiIsImlhdCI6MTc0ODkxNTcwNCwiZXhwIjoxNzQ4OTE5MzA0LCJlbWFpbCI6ImpvYXF1aW5oaWRhbGdvOThAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbImpvYXF1aW5oaWRhbGdvOThAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.hnRmqcLVyjPUUMpT48FDMdsdHq1LTfKfAMRmnW21PemzXUP9SdWJoYbHWncTCe_qnrDmOt9s0_vo987eWuBu1yJV1eKWQt1s4pqlzcUe0ah3_mlrrNx1PHfS9-XGyPpoMx0uBqe8GM7IMY1OlrDbjq1jil25Rn1H5RrTlYn5CSm-5O3qaLzZMcxO3ThwBr2ZxjN3VEBLYXRiiV92U6Iz6bbeSXwhIrjl4JEp0p1kpT3o3pJV8_7SmbSkINYCwvi86d1crANlVURnAvpbmQgrUc0mUXtVsjJryackJmno3PqKrIZ6lA_uOKs-ZR39YAcfg1j5Db5toOcAmqBvKJMTjA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/v1/notifications/get-all?cuentaId=CzHc0ae69xVsHHF9IhnV",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"notifications",
+								"get-all"
+							],
+							"query": [
+								{
+									"key": "cuentaId",
+									"value": "CzHc0ae69xVsHHF9IhnV"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Acceptar Miembro",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjZlODk1YzQ3YTA0YzVmNmRlMzExMmFmZjE2ODFhMzUwNzdkMWNjZDQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY29vcGVyYXV0aGFwcCIsImF1ZCI6ImNvb3BlcmF1dGhhcHAiLCJhdXRoX3RpbWUiOjE3NDkwODE5ODQsInVzZXJfaWQiOiIzRXpqcDdHakFEU0t0T0FrYWJHcjFQdmNQU00yIiwic3ViIjoiM0V6anA3R2pBRFNLdE9Ba2FiR3IxUHZjUFNNMiIsImlhdCI6MTc0OTA4MTk4NCwiZXhwIjoxNzQ5MDg1NTg0LCJlbWFpbCI6ImpvYXF1aW5oaWRhbGdvOThAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbImpvYXF1aW5oaWRhbGdvOThAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.IWoX64FEFzDSr-GUcQ8X_E5DhsiB3JWFoygxldJOshOKs4oPETFIhMUWw4b1rVc3oQdf3MkzpVwPWrrR_wqgMZYGIm4ygmKEQkpMrvz6RBdYXGSN9iVHCnvbOg6HHmF1yFGebJc6atr2tySjDDFhuny-88DVFUtOG4YH9ko5pDf2---TPQHS61NTNBe4lNGnl1wzk9ZiyDzLc7CskFU-jLqIRGNyVdH9VCdWJXk6AJySu6poyxeE_ohLVS7V8SHtRbUmCOd_fFPIFRtFLTdOCO7UZWANWAcTOX6qVdow3aCA1bo0Q8NK_OI-k6M5ApNKC_MMPyrnA0yPGeOyVvT5gg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/v1/notifications/accept-member?idNotificacion=SQSobcZiyQgj6NOFxvbe",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"notifications",
+								"accept-member"
+							],
+							"query": [
+								{
+									"key": "idNotificacion",
+									"value": "SQSobcZiyQgj6NOFxvbe"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Rechazar Solcitud",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjZlODk1YzQ3YTA0YzVmNmRlMzExMmFmZjE2ODFhMzUwNzdkMWNjZDQiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vY29vcGVyYXV0aGFwcCIsImF1ZCI6ImNvb3BlcmF1dGhhcHAiLCJhdXRoX3RpbWUiOjE3NDkwODQ4OTYsInVzZXJfaWQiOiIzRXpqcDdHakFEU0t0T0FrYWJHcjFQdmNQU00yIiwic3ViIjoiM0V6anA3R2pBRFNLdE9Ba2FiR3IxUHZjUFNNMiIsImlhdCI6MTc0OTA4NDg5NiwiZXhwIjoxNzQ5MDg4NDk2LCJlbWFpbCI6ImpvYXF1aW5oaWRhbGdvOThAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbImpvYXF1aW5oaWRhbGdvOThAZ21haWwuY29tIl19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.A1Hw9fVjaSfLNLwmlHpWyo5vP0ott1mDzHz1QkXBoyUf6EYtUxWzm7SrnHf4-3DYrvQmgMn6-3SKV4f44ZTjhHXpqmFFP0lJDpDWYV0CigwbWpVHf9p_dzlzTWehSmlBinNDuugvDJGWHw5SlRec2yePyrzclNDRiAFExi2fOuUBKzUylAWbg3c0ngbE_sDU2ssEq8l1ZmM1DvahXp0uOKlv6Yylxc6RhHWfF1Urf77NGtVnGIOYw2Q5CIRJFHKezOGrYGjtYQw_yZHzBZ3M3Pc0Lrg_XwBerHRSf-Lwlq14rNpUw2pqDd42_vNPTqfIEzLLHpQCe7MsfaW15hiloA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/v1/notifications/reject-member?idNotificacion=Km6xoA9zUewgljsE6x37",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"notifications",
+								"reject-member"
+							],
+							"query": [
+								{
+									"key": "idNotificacion",
+									"value": "Km6xoA9zUewgljsE6x37"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
